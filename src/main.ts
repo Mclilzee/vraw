@@ -1,18 +1,11 @@
 import './style.css'
-const TILE_SIZE = 20;
-const CANVAS_WIDTH = 400;
-const CANVAS_HEIGHT = 400;
+import { canvas, ctx } from './elements';
+const TILE_SIZE = 30;
+const CANVAS_WIDTH = 800;
+const CANVAS_HEIGHT = 800;
+
 const array = Array(TILE_SIZE).fill(0).map(() => Array(TILE_SIZE).fill(0));
 
-const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
-if (canvas == null) {
-    throw Error("Canvas were not found");
-}
-
-const ctx = canvas.getContext("2d");
-if (ctx == null) {
-    throw Error("Context 2D is not supported");
-}
 
 enum MotionMode {
     Insert,
@@ -94,18 +87,16 @@ function moveCursorDown(moves: number) {
 }
 
 function drawTable(ctx: CanvasRenderingContext2D) {
+    const width = canvas.width / TILE_SIZE;
+    const height = canvas.height / TILE_SIZE;
     for (let i = 0; i < array.length; i++) {
         for (let j = 0; j < array[i].length; j++) {
-            let lineHeight = Math.floor(i * TILE_SIZE);
-            let lineWidth = Math.floor(j * TILE_SIZE);
-            ctx.strokeRect(lineWidth, lineHeight, TILE_SIZE, TILE_SIZE);
+            ctx.strokeRect(i * width, j * height, width, height);
             ctx.fillStyle = colorTable[array[i][j]];
-            ctx.fillRect(lineWidth, lineHeight, TILE_SIZE, TILE_SIZE);
+            ctx.fillRect(i * width, j * height, width, height);
         }
     }
 
-    let lineHeight = Math.floor(cursorPosition[0] * TILE_SIZE);
-    let lineWidth = Math.floor(cursorPosition[1] * TILE_SIZE);
     ctx.fillStyle = cursorPosition[2] == MotionMode.Normal ? "black" : "red";
-    ctx.fillRect(lineWidth, lineHeight, TILE_SIZE, TILE_SIZE);
+    ctx.fillRect(cursorPosition[1] * width, cursorPosition[0] * height, width, height);
 }
