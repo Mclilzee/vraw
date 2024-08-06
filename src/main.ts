@@ -16,7 +16,14 @@ const colorTable = ["#a5a5a5", "blue"];
 drawTable();
 addEventListener("keydown", (e) => {
     if (e.key == "0" && numStr.length == 0) {
+        const y = cursor.getY();
+        let x = cursor.getX();
         cursor.moveToRowStart();
+        if (cursor.inInsertMode()) {
+            for (let i = y; i >= 0; i--) {
+                array[x][i] = 1;
+            }
+        }
     } else if (!isNaN(parseInt(e.key))) {
         numStr += e.key;
         return;
@@ -29,13 +36,12 @@ addEventListener("keydown", (e) => {
 
     switch (e.key) {
         case "i": cursor.switchModeToInsert(); break;
-        case "Escape": cursor.switchModeToNormal; break;
+        case "Escape": cursor.switchModeToNormal(); break;
         case "l": cursor.moveCursorRight(num); break;
         case "h": cursor.moveCursorLeft(num); break;
         case "k": cursor.moveCursorUp(num); break;
         case "j": cursor.moveCursorDown(num); break;
         case "$": cursor.moveToRowEnd(); break;
-
     }
 
     if (cursor.inInsertMode()) {

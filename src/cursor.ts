@@ -53,7 +53,7 @@ export class Cursor {
     }
     
     moveToRowEnd() {
-        this.y = this.xBoundary - 1;
+        this.y = this.yBoundary - 1;
     }
 
     moveCursorRight(moves: number) {
