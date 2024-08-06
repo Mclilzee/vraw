@@ -20,14 +20,27 @@ canvas.height = CANVAS_HEIGHT;
 
 const colorTable = ["#a5a5a5", "blue", "red"];
 setInterval(() => drawTable(ctx), 5);
-addEventListener("keypress", () => {
+addEventListener("keypress", (e) => {
     for (let i = 0; i < array.length; i++) {
         for (let j = 0; j < array[i].length; j++) {
-            if (array[i][j] == 1 && j < TILE_SIZE - 1) {
+            if (array[i][j] != 1) {
+                continue;
+            }
+
+            if (e.key == "l" && j < TILE_SIZE - 1) {
                 array[i][j] = 0;
                 array[i][j + 1] = 1;
-               return;
+            } else if (e.key == "h" && j > 0){
+                array[i][j] = 0;
+                array[i][j - 1] = 1;
+            } else if (e.key == "j" && i < TILE_SIZE - 1) {
+                array[i][j] = 0;
+                array[i + 1][j] = 1;
+            } else if (e.key == "k" && i > 0) {
+                array[i][j] = 0;
+                array[i - 1][j] = 1;
             }
+            return;
         }
     }
 });
