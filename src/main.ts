@@ -1,4 +1,7 @@
 import './style.css'
+const TILE_SIZE = 20;
+const CANVAS_WIDTH = 400;
+const CANVAS_HEIGHT = 400;
 const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
 if (canvas == null) {
     throw Error("Canvas were not found");
@@ -9,17 +12,17 @@ if (ctx == null) {
     throw Error("Context 2D is not supported");
 }
 
-let array = Array(40).fill(Array(40).fill(0));
-canvas.width =  400;
-canvas.height = 400;
+let array = Array(TILE_SIZE).fill(Array(TILE_SIZE).fill(0));
+array[0][0] = 1;
+canvas.width =  CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
 
-for (let i = 0; i < canvas.width / 40; i++) {
-    for (let j = 0; j < canvas.height / 40; j++) {
-        let lineWidth = Math.floor(i * 40);
-        let lineHeight = Math.floor(j * 40);
-
-        ctx.strokeRect(lineWidth, lineHeight, 40 , 40);
+for (let i = 0; i < array.length; i++) {
+    for (let j = 0; j < array[i].length; j++) {
+        let lineWidth = Math.floor(i * TILE_SIZE);
+        let lineHeight = Math.floor(j * TILE_SIZE);
+        ctx.strokeRect(lineWidth, lineHeight, TILE_SIZE , TILE_SIZE);
         ctx.fillStyle = "#a5a5a5";
-        ctx.fillRect(lineWidth, lineHeight, 40 , 40);
+        ctx.fillRect(lineWidth, lineHeight, TILE_SIZE , TILE_SIZE);
     }
 }
