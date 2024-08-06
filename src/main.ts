@@ -1,32 +1,28 @@
 import './style.css'
 import { canvas, ctx } from './elements';
-const TILE_SIZE = 30;
+const TILE_SIZE = 60;
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 800;
-
-const array = Array(TILE_SIZE).fill(0).map(() => Array(TILE_SIZE).fill(0));
-
 
 enum MotionMode {
     Insert,
     Normal
 }
 
+const array = Array(TILE_SIZE).fill(0).map(() => Array(TILE_SIZE).fill(0));
 const cursorPosition: [number, number, MotionMode] = [0, 0, MotionMode.Normal];
+
 
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 let numStr = "";
 
 const colorTable = ["#a5a5a5", "blue"];
-setInterval(() => drawTable(ctx), 5);
+drawTable();
 addEventListener("keydown", (e) => {
     if (e.key == "0" && numStr.length == 0) {
         cursorPosition[1] = 0;
-        return;
-    }
-
-    if (!isNaN(parseInt(e.key))) {
+    } else if (!isNaN(parseInt(e.key))) {
         numStr += e.key;
         return;
     }
@@ -52,6 +48,7 @@ addEventListener("keydown", (e) => {
     }
 
     numStr = "";
+    drawTable();
 });
 
 function moveCursorRight(moves: number) {
@@ -86,7 +83,7 @@ function moveCursorDown(moves: number) {
     cursorPosition[0] = newPos;
 }
 
-function drawTable(ctx: CanvasRenderingContext2D) {
+function drawTable() {
     const width = canvas.width / TILE_SIZE;
     const height = canvas.height / TILE_SIZE;
     for (let i = 0; i < array.length; i++) {
@@ -97,6 +94,6 @@ function drawTable(ctx: CanvasRenderingContext2D) {
         }
     }
 
-    ctx.fillStyle = cursorPosition[2] == MotionMode.Normal ? "black" : "red";
+    ctx.fillStyle = cursorPosition[2] == MotionMode.Normal ? "black" : "red"
     ctx.fillRect(cursorPosition[1] * width, cursorPosition[0] * height, width, height);
 }
