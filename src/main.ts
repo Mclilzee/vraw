@@ -23,29 +23,64 @@ const cursorPosition: [number, number, MotionMode] = [0, 0, MotionMode.Normal];
 
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
+let numStr = "";
 
 const colorTable = ["#a5a5a5", "blue"];
 setInterval(() => drawTable(ctx), 5);
 addEventListener("keydown", (e) => {
-    console.log(e.key);
-    if (e.key == "i") {
-        cursorPosition[2] = MotionMode.Insert;
-    } else if (e.key == "Escape") {
-        cursorPosition[2] = MotionMode.Normal;
-    } else if (e.key == "l" && cursorPosition[1] < TILE_SIZE - 1) {
-        cursorPosition[1]++;
-    } else if (e.key == "h" && cursorPosition[1] > 0) {
-        cursorPosition[1]--;
-    } else if (e.key == "j" && cursorPosition[0] < TILE_SIZE - 1) {
-        cursorPosition[0]++;
-    } else if (e.key == "k" && cursorPosition[0] > 0) {
-        cursorPosition[0]--;
+    if (!isNaN(parseInt(e.key))) {
+        numStr += e.key;
+        return;
+    }
+
+    let num = 1;
+    if (numStr.length > 0) {
+        num = parseInt(numStr);
+    }
+
+    switch (e.key) {
+        case "i": cursorPosition[2] = MotionMode.Insert; break;
+        case "Escape": cursorPosition[2] = MotionMode.Normal; break;
+        case "l": moveCursorRight(num); break;
+        case "h": moveCursorLeft(num); break;
+        case "k": moveCursorUp(num); break;
+        case "j": moveCursorDown(num); break;
+
     }
 
     if (cursorPosition[2] == MotionMode.Insert) {
         array[cursorPosition[0]][cursorPosition[1]] = 1;
     }
+
+    numStr = "";
 });
+
+function moveCursorRight(moves: number) {
+    let newPos = cursorPosition[1] + moves;
+    console.log(newPos);
+    if (newPos > TILE_SIZE - 1) {
+        newPos = TILE_SIZE - 1;
+    }
+    cursorPosition[1] = newPos;
+}
+
+function moveCursorLeft(moves: number) {
+    if (cursorPosition[1] > 0) {
+        cursorPosition[1]--;
+    }
+}
+
+function moveCursorUp(moves: number) {
+    if (cursorPosition[0] > 0) {
+        cursorPosition[0]--;
+    }
+}
+
+function moveCursorDown(moves: number) {
+    if (cursorPosition[0] < TILE_SIZE - 1) {
+        cursorPosition[0]++;
+    }
+}
 
 function drawTable(ctx: CanvasRenderingContext2D) {
     for (let i = 0; i < array.length; i++) {
