@@ -28,6 +28,11 @@ let numStr = "";
 const colorTable = ["#a5a5a5", "blue"];
 setInterval(() => drawTable(ctx), 5);
 addEventListener("keydown", (e) => {
+    if (e.key == "0" && numStr.length == 0) {
+        cursorPosition[1] = 0;
+        return;
+    }
+
     if (!isNaN(parseInt(e.key))) {
         numStr += e.key;
         return;
@@ -45,6 +50,7 @@ addEventListener("keydown", (e) => {
         case "h": moveCursorLeft(num); break;
         case "k": moveCursorUp(num); break;
         case "j": moveCursorDown(num); break;
+        case "$": cursorPosition[1] = TILE_SIZE - 1; break;
 
     }
 
@@ -57,7 +63,6 @@ addEventListener("keydown", (e) => {
 
 function moveCursorRight(moves: number) {
     let newPos = cursorPosition[1] + moves;
-    console.log(newPos);
     if (newPos > TILE_SIZE - 1) {
         newPos = TILE_SIZE - 1;
     }
@@ -65,21 +70,27 @@ function moveCursorRight(moves: number) {
 }
 
 function moveCursorLeft(moves: number) {
-    if (cursorPosition[1] > 0) {
-        cursorPosition[1]--;
+    let newPos = cursorPosition[1] - moves;
+    if (newPos < 0) {
+        newPos = 0;
     }
+    cursorPosition[1] = newPos;
 }
 
 function moveCursorUp(moves: number) {
-    if (cursorPosition[0] > 0) {
-        cursorPosition[0]--;
+    let newPos = cursorPosition[0] - moves;
+    if (newPos < 0) {
+        newPos = 0;
     }
+    cursorPosition[0] = newPos;
 }
 
 function moveCursorDown(moves: number) {
-    if (cursorPosition[0] < TILE_SIZE - 1) {
-        cursorPosition[0]++;
+    let newPos = cursorPosition[0] + moves;
+    if (newPos > TILE_SIZE - 1) {
+        newPos = TILE_SIZE - 1;
     }
+    cursorPosition[0] = newPos;
 }
 
 function drawTable(ctx: CanvasRenderingContext2D) {
