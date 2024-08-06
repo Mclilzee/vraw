@@ -18,14 +18,23 @@ canvas.width =  CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 
 const colorTable = ["#a5a5a5", "blue", "red"];
-console.log(array);
+drawTable(ctx);
 
-for (let i = 0; i < array.length; i++) {
-    for (let j = 0; j < array[i].length; j++) {
-        let lineWidth = Math.floor(i * TILE_SIZE);
-        let lineHeight = Math.floor(j * TILE_SIZE);
-        ctx.strokeRect(lineWidth, lineHeight, TILE_SIZE , TILE_SIZE);
-        ctx.fillStyle = colorTable[array[i][j]];
-        ctx.fillRect(lineWidth, lineHeight, TILE_SIZE , TILE_SIZE);
+addEventListener("keypress", () => {
+    array[0][0] = 0;
+    array[1][1] = 1;
+    drawTable(ctx);
+});
+
+
+function drawTable(ctx: CanvasRenderingContext2D) {
+    for (let i = 0; i < array.length; i++) {
+        for (let j = 0; j < array[i].length; j++) {
+            let lineWidth = Math.floor(i * TILE_SIZE);
+            let lineHeight = Math.floor(j * TILE_SIZE);
+            ctx.strokeRect(lineWidth, lineHeight, TILE_SIZE , TILE_SIZE);
+            ctx.fillStyle = colorTable[array[i][j]];
+            ctx.fillRect(lineWidth, lineHeight, TILE_SIZE , TILE_SIZE);
+        }
     }
 }
