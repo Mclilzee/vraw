@@ -1,8 +1,8 @@
 import './style.css'
 import { canvas, ctx } from './elements';
-const TILE_SIZE = 60;
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 800;
+const TILE_SIZE = 40;
+const CANVAS_WIDTH = 600;
+const CANVAS_HEIGHT = 600;
 
 enum MotionMode {
     Insert,
@@ -88,9 +88,9 @@ function drawTable() {
     const height = canvas.height / TILE_SIZE;
     for (let i = 0; i < array.length; i++) {
         for (let j = 0; j < array[i].length; j++) {
-            ctx.strokeRect(i * width, j * height, width, height);
+            ctx.strokeRect(j * width, i * height, width, height);
             ctx.fillStyle = colorTable[array[i][j]];
-            ctx.fillRect(i * width, j * height, width, height);
+            ctx.fillRect(j * width, i * height, width, height);
         }
     }
 
