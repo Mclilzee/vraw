@@ -12,17 +12,20 @@ if (ctx == null) {
     throw Error("Context 2D is not supported");
 }
 
-let array = Array(TILE_SIZE).fill(Array(TILE_SIZE).fill(0));
+let array = Array(TILE_SIZE).fill(0).map(() => Array(TILE_SIZE).fill(0));
 array[0][0] = 1;
 canvas.width =  CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
+
+const colorTable = ["#a5a5a5", "blue", "red"];
+console.log(array);
 
 for (let i = 0; i < array.length; i++) {
     for (let j = 0; j < array[i].length; j++) {
         let lineWidth = Math.floor(i * TILE_SIZE);
         let lineHeight = Math.floor(j * TILE_SIZE);
         ctx.strokeRect(lineWidth, lineHeight, TILE_SIZE , TILE_SIZE);
-        ctx.fillStyle = "#a5a5a5";
+        ctx.fillStyle = colorTable[array[i][j]];
         ctx.fillRect(lineWidth, lineHeight, TILE_SIZE , TILE_SIZE);
     }
 }
