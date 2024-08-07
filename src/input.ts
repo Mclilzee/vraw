@@ -60,13 +60,25 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            for(let i = this.cursor.x; i <= newPos; i++){
-                this.board[i][this.cursor.y] = this.drawingColor;
-            }
+            this.drawVerticalLine(this.cursor.x, newPos, this.cursor.y, this.drawingColor);
+        } else if (this.cursor.inDeleteMode()) {
+            this.drawVerticalLine(this.cursor.x, newPos, this.cursor.y, CELL_DEFAULT_COLOR);
         }
 
         this.cursor.x = newPos;
         this.moves = 1;
+    }
+
+    drawVerticalLine(start: number, end: number, y: number, color: string) {
+        for(let i = start; i <= end; i++){
+            this.board[i][y] = color;
+        }
+    }
+
+    drawHorizontalLine(start: number, end: number, x: number, color: string) {
+        for(let i = start; i <= end; i++){
+            this.board[x][i] = color;
+        }
     }
 
     handleInput(input: string) {
