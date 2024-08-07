@@ -1,12 +1,6 @@
 import { Cursor } from "./cursor";
 const CELL_DEFAULT_COLOR = "#a5a5a5";
 
-enum Operation {
-    Delete,
-    Draw,
-    Move,
-}
-
 export class DrawingBoard {
     cursor = new Cursor();
     width: number;
