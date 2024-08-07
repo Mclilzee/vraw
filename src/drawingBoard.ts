@@ -39,10 +39,9 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            this.drawHorizontalLine(this.cursor.y, newPos);
+            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         } else if (this.cursor.inDeleteMode()) {
-            this.deleteHorizontalLine(this.cursor.y, newPos);
-            this.cursor.switchToNormal();
+            this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         }
 
         this.cursor.y = newPos;
@@ -56,10 +55,9 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            this.drawHorizontalLine(newPos, this.cursor.y);
+            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         } else if (this.cursor.inDeleteMode()) {
-            this.deleteHorizontalLine(newPos, this.cursor.y);
-            this.cursor.switchToNormal();
+            this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         }
 
         this.cursor.y = newPos;
@@ -73,10 +71,9 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            this.drawVerticalLine(newPos, this.cursor.x);
+            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         } else if (this.cursor.inDeleteMode()) {
-            this.deleteVerticalLine(newPos, this.cursor.x);
-            this.cursor.switchToNormal();
+            this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         }
 
         this.cursor.x = newPos;
@@ -90,39 +87,36 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            this.drawVerticalLine(this.cursor.x, newPos);
+            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         } else if (this.cursor.inDeleteMode()) {
-            this.deleteVerticalLine(this.cursor.x, newPos);
-            this.cursor.switchToNormal();
+            this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         }
 
         this.cursor.x = newPos;
         this.moves = 0;
     }
 
-    drawVerticalLine(start: number, end: number) {
-        for(let i = start; i <= end; i++){
-            this.board[i][this.cursor.y] = this.drawingColor;
+    drawArea(xStart: number, xEnd: number, yStart: number, yEnd: number) {
+        this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor);
+    }
+
+    deleteArea(xStart: number, xEnd: number, yStart: number, yEnd: number) {
+        this.fillArea(xStart, xEnd, yStart, yEnd, CELL_DEFAULT_COLOR);
+        this.cursor.switchToNormal();
+    }
+
+    fillArea(xStart: number, xEnd: number, yStart: number, yEnd: number, color: string) {
+        let iStart = Math.min(xStart, xEnd);
+        let iEnd  = Math.max(xStart, xEnd);
+        const jStart = Math.min(yStart, yEnd);
+        const jEnd = Math.max(yStart, yEnd);
+        for(let i = iStart; i <= iEnd; i++){
+            for (let j = jStart; j <= jEnd; j++) {
+                this.board[i][j] = color;
+            }
         }
     }
 
-    drawHorizontalLine(start: number, end: number) {
-        for(let i = start; i <= end; i++){
-            this.board[this.cursor.x][i] = this.drawingColor;
-        }
-    }
-
-    deleteVerticalLine(start: number, end: number) {
-        for(let i = start; i <= end; i++){
-            this.board[i][this.cursor.y] = CELL_DEFAULT_COLOR;
-        }
-    }
-
-    deleteHorizontalLine(start: number, end: number) {
-        for(let i = start; i <= end; i++){
-            this.board[this.cursor.x][i] = CELL_DEFAULT_COLOR;
-        }
-    }
 
     handleInput(input: string) {
         if (input == "0" && this.moves == 0) {
