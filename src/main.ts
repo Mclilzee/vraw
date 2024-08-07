@@ -42,6 +42,7 @@ addEventListener("keydown", (e) => {
         case "k": cursor.moveCursorUp(num); break;
         case "j": cursor.moveCursorDown(num); break;
         case "x": deleteCursorCell(); break;
+        case "D": deleteToTheRight(); break;
         case "$": {
             const y = cursor.getY();
             let x = cursor.getX();
@@ -72,6 +73,13 @@ addEventListener("keydown", (e) => {
     drawTable();
 });
 
+function deleteToTheRight() {
+    let y = cursor.getY();
+    let x = cursor.getX();
+    for (let i = y; i < TILE_SIZE; i++) {
+        array[x][i] = 0;
+    }
+}
 
 function deleteLine() {
     array[cursor.getX()] = Array(TILE_SIZE).fill(0);
