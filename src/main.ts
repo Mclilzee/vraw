@@ -1,6 +1,6 @@
 import './style.css'
 import { canvas, ctx } from './elements';
-import { DrawingBoard } from './input';
+import { DrawingBoard } from './drawingBoard';
 const TILE_SIZE = 40;
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 600;
