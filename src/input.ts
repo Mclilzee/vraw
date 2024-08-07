@@ -1,14 +1,16 @@
 import { Cursor } from "./cursor";
+const CELL_DEFAULT_COLOR = "#a5a5a5";
 
 export class DrawingBoard {
     cursor = new Cursor();
     width: number;
     height: number;
-    board: number[][];
+    board: string[][];
     moves = 1;
+    drawingColor = "black";
 
     constructor(width: number, height: number) {
-        this.board = Array(height).fill(0).map(() => Array(width).fill(0));
+        this.board = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
         this.width = width;
         this.height = height;
     }
@@ -30,6 +32,7 @@ export class DrawingBoard {
             newPos = this.width - 1;
         }
         this.cursor.y = newPos;
+        this.moves = 1;
     }
 
     moveCursorLeft() {
@@ -38,6 +41,7 @@ export class DrawingBoard {
             newPos = 0;
         }
         this.cursor.y = newPos;
+        this.moves = 1;
     }
 
     moveCursorUp() {
@@ -46,6 +50,7 @@ export class DrawingBoard {
             newPos = 0;
         }
         this.cursor.x = newPos;
+        this.moves = 1;
     }
 
     moveCursorDown() {
@@ -53,7 +58,15 @@ export class DrawingBoard {
         if (newPos > this.height - 1) {
             newPos = this.height - 1;
         }
+
+        if (this.cursor.inInsertMode()) {
+            for(let i = this.cursor.x; i <= newPos; i++){
+                this.board[i][this.cursor.y] = this.drawingColor;
+            }
+        }
+
         this.cursor.x = newPos;
+        this.moves = 1;
     }
 
     handleInput(input: string) {
@@ -73,9 +86,9 @@ export class DrawingBoard {
             case "h": this.moveCursorLeft(); break;
             case "k": this.moveCursorUp(); break;
             case "j": this.moveCursorDown(); break;
-            case "x": this.board[this.cursor.x][this.cursor.y] = 0; break;
+            case "x": this.board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR; break;
             case "D": ; break;
-            case "$": this.moveToRowEnd; break;
+            case "$": this.moveToRowEnd(); break;
             case "d": {
                 if (this.cursor.inDeleteMode()) {
                     this.board[this.cursor.x].map(() => 0);

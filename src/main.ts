@@ -5,15 +5,14 @@ const TILE_SIZE = 40;
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 600;
 
-const board = new DrawingBoard(TILE_SIZE, TILE_SIZE);
+const drawingBoard = new DrawingBoard(TILE_SIZE, TILE_SIZE);
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 
-const colorTable = ["#a5a5a5", "blue"];
-draw(board);
+draw(drawingBoard);
 addEventListener("keydown", (e) => {
-    board.handleInput(e.key);
-    draw(board);
+    drawingBoard.handleInput(e.key);
+    draw(drawingBoard);
 });
 
 function draw(board: DrawingBoard) {
@@ -22,7 +21,7 @@ function draw(board: DrawingBoard) {
     for (let i = 0; i < board.width; i++) {
         for (let j = 0; j < board.height; j++) {
             ctx.strokeRect(j * width, i * height, width, height);
-            ctx.fillStyle = colorTable[board.board[i][j]];
+            ctx.fillStyle = board.board[i][j];
             ctx.fillRect(j * width, i * height, width, height);
         }
     }
