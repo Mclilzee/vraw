@@ -101,10 +101,10 @@ export class DrawingBoard {
 
     fillArea(xStart: number, xEnd: number, yStart: number, yEnd: number, color: string) {
         let iStart = Math.min(xStart, xEnd);
-        let iEnd  = Math.max(xStart, xEnd);
+        let iEnd = Math.max(xStart, xEnd);
         const jStart = Math.min(yStart, yEnd);
         const jEnd = Math.max(yStart, yEnd);
-        for(let i = iStart; i <= iEnd; i++){
+        for (let i = iStart; i <= iEnd; i++) {
             for (let j = jStart; j <= jEnd; j++) {
                 this.board[i][j] = color;
             }
@@ -130,17 +130,9 @@ export class DrawingBoard {
             case "k": this.moveCursorUp(); break;
             case "j": this.moveCursorDown(); break;
             case "x": this.board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR; break;
-            case "D": ; break;
+            case "D": this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, this.width - 1); break;
             case "$": this.moveToRowEnd(); break;
-            case "d": {
-                if (this.cursor.inDeleteMode()) {
-                    this.board[this.cursor.x].map(() => 0);
-                    this.cursor.switchToNormal();
-                } else {
-                    this.cursor.switchToDelete();
-                }
-
-            };
+            case "d": this.cursor.inDeleteMode() ? this.deleteArea(this.cursor.x, this.cursor.x, 0, this.width - 1) : this.cursor.switchToDelete(); break;
         }
     }
 }
