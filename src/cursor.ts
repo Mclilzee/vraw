@@ -1,7 +1,8 @@
 enum CursorMode {
     Insert,
     Normal,
-    Visual
+    Visual,
+    Delete,
 }
 
 export class Cursor {
@@ -24,16 +25,20 @@ export class Cursor {
         return this.y;
     }
 
-    switchModeToInsert() {
+    switchToInsertMode() {
         this.mode = CursorMode.Insert;
     }
 
-    switchModeToNormal() {
+    switchToNormalMode() {
         this.mode = CursorMode.Normal;
     }
 
-    switchModeToVisual() {
+    switchToVisualMode() {
         this.mode = CursorMode.Visual;
+    }
+
+    switchToDeleteMode() {
+        this.mode = CursorMode.Delete;
     }
 
     inInsertMode(): boolean {
@@ -46,6 +51,10 @@ export class Cursor {
 
     inVisualMode(): boolean {
         return this.mode == CursorMode.Visual;
+    }
+
+    inDeleteMode(): boolean {
+        return this.mode == CursorMode.Delete;
     }
 
     moveToRowStart() {

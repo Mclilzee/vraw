@@ -19,9 +19,9 @@ addEventListener("keydown", (e) => {
         const y = cursor.getY();
         let x = cursor.getX();
         cursor.moveToRowStart();
-        if (cursor.inInsertMode()) {
+        if (cursor.inInsertMode() || cursor.inDeleteMode()) {
             for (let i = y; i >= 0; i--) {
-                array[x][i] = 1;
+                array[x][i] = cursor.inInsertMode() ? 1 : 0;
             }
         }
     } else if (!isNaN(parseInt(e.key))) {
@@ -35,13 +35,33 @@ addEventListener("keydown", (e) => {
     }
 
     switch (e.key) {
-        case "i": cursor.switchModeToInsert(); break;
-        case "Escape": cursor.switchModeToNormal(); break;
+        case "i": cursor.switchToInsertMode(); break;
+        case "Escape": cursor.switchToNormalMode(); break;
         case "l": cursor.moveCursorRight(num); break;
         case "h": cursor.moveCursorLeft(num); break;
         case "k": cursor.moveCursorUp(num); break;
         case "j": cursor.moveCursorDown(num); break;
-        case "$": cursor.moveToRowEnd(); break;
+        case "x": deleteCursorCell(); break;
+        case "$": {
+            const y = cursor.getY();
+            let x = cursor.getX();
+            cursor.moveToRowEnd();
+            if (cursor.inInsertMode() || cursor.inDeleteMode()) {
+                for (let i = y; i < TILE_SIZE - 1; i++) {
+                    array[x][i] = cursor.inInsertMode() ? 1 : 0;
+                }
+            }
+            break;
+        };
+        case "d": {
+            if (cursor.inDeleteMode()) {
+                deleteLine();
+                cursor.switchToNormalMode();
+            } else {
+                cursor.switchToDeleteMode();
+            }
+
+        };
     }
 
     if (cursor.inInsertMode()) {
@@ -51,6 +71,17 @@ addEventListener("keydown", (e) => {
     numStr = "";
     drawTable();
 });
+
+
+function deleteLine() {
+    array[cursor.getX()] = Array(TILE_SIZE).fill(0);
+}
+
+function deleteCursorCell() {
+    if (cursor.inNormalMode()) {
+        array[cursor.getX()][cursor.getY()] = 0;
+    }
+}
 
 function drawTable() {
     const width = canvas.width / TILE_SIZE;
