@@ -1,19 +1,19 @@
 import './style.css'
 import { canvas, ctx } from './elements';
 import { Cursor } from './cursor';
+import { DrawingBoard } from './input';
 const TILE_SIZE = 40;
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 600;
 
-const array = Array(TILE_SIZE).fill(0).map(() => Array(TILE_SIZE).fill(0));
-const cursor = new Cursor(TILE_SIZE, TILE_SIZE);
+const board = new DrawingBoard(TILE_SIZE, TILE_SIZE);
 
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 let numStr = "";
 
 const colorTable = ["#a5a5a5", "blue"];
-drawTable();
+drawTable(array);
 addEventListener("keydown", (e) => {
     if (e.key == "0" && numStr.length == 0) {
         const y = cursor.getY();
@@ -70,7 +70,7 @@ addEventListener("keydown", (e) => {
     }
 
     numStr = "";
-    drawTable();
+    drawTable(cursor, array);
 });
 
 function deleteToTheRight() {
@@ -91,7 +91,7 @@ function deleteCursorCell() {
     }
 }
 
-function drawTable() {
+function drawTable(cursor: Cursor, array: number[][]) {
     const width = canvas.width / TILE_SIZE;
     const height = canvas.height / TILE_SIZE;
     for (let i = 0; i < array.length; i++) {
