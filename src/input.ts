@@ -28,7 +28,7 @@ export class DrawingBoard {
     }
 
     moveToRowEnd() {
-        this.moves = this.cursor.y - this.width - 1;
+        this.moves = this.width - 1 - this.cursor.y;
         this.moveCursorRight();
     }
 
@@ -75,7 +75,7 @@ export class DrawingBoard {
         if (this.cursor.inInsertMode()) {
             this.drawVerticalLine(newPos, this.cursor.x);
         } else if (this.cursor.inDeleteMode()) {
-            this.deleteHorizontalLine(newPos, this.cursor.x);
+            this.deleteVerticalLine(newPos, this.cursor.x);
             this.cursor.switchToNormal();
         }
 
@@ -92,7 +92,7 @@ export class DrawingBoard {
         if (this.cursor.inInsertMode()) {
             this.drawVerticalLine(this.cursor.x, newPos);
         } else if (this.cursor.inDeleteMode()) {
-            this.deleteHorizontalLine(this.cursor.x, newPos);
+            this.deleteVerticalLine(this.cursor.x, newPos);
             this.cursor.switchToNormal();
         }
 
