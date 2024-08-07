@@ -15,39 +15,41 @@ export class DrawingBoard {
 
 
     moveToRowStart() {
-        this.cursor.y = 0;
+        this.moves = this.cursor.y;
+        this.moveCursorLeft();
     }
 
     moveToRowEnd() {
-        this.cursor.y = this.width - 1;
+        this.moves = this.cursor.y - this.width - 1;
+        this.moveCursorRight();
     }
 
-    moveCursorRight(moves: number) {
-        let newPos = this.cursor.y + moves;
+    moveCursorRight() {
+        let newPos = this.cursor.y + this.moves;
         if (newPos > this.width - 1) {
             newPos = this.width - 1;
         }
         this.cursor.y = newPos;
     }
 
-    moveCursorLeft(moves: number) {
-        let newPos = this.cursor.y - moves;
+    moveCursorLeft() {
+        let newPos = this.cursor.y - this.moves;
         if (newPos < 0) {
             newPos = 0;
         }
         this.cursor.y = newPos;
     }
 
-    moveCursorUp(moves: number) {
-        let newPos = this.cursor.x - moves;
+    moveCursorUp() {
+        let newPos = this.cursor.x - this.moves;
         if (newPos < 0) {
             newPos = 0;
         }
         this.cursor.x = newPos;
     }
 
-    moveCursorDown(moves: number) {
-        let newPos = this.cursor.x + moves;
+    moveCursorDown() {
+        let newPos = this.cursor.x + this.moves;
         if (newPos > this.height - 1) {
             newPos = this.height - 1;
         }
@@ -56,12 +58,7 @@ export class DrawingBoard {
 
     handleInput(input: string) {
         if (input == "0" && this.moves == 1) {
-            if (this.cursor.inInsertMode() || this.cursor.inDeleteMode()) {
-                for (let i = this.cursor.y; i >= 0; i--) {
-                    this.board[this.cursor.x][i] = this.cursor.inInsertMode() ? 1 : 0;
-                }
-            }
-            this.cursor.y = 0;
+            this.moveToRowStart();
         } else {
             const num = parseInt(input);
             if (!isNaN(num)) {
@@ -72,38 +69,22 @@ export class DrawingBoard {
         switch (input) {
             case "i": this.cursor.switchToInsert(); break;
             case "Escape": this.cursor.switchToNormal(); break;
-            //case "l": this.cursor.moveCursorRight(); break;
-            //case "h": this.cursor.moveCursorLeft(); break;
-            //case "k": this.cursor.moveCursorUp(); break;
-            //case "j": this.cursor.moveCursorDown(); break;
+            case "l": this.moveCursorRight(); break;
+            case "h": this.moveCursorLeft(); break;
+            case "k": this.moveCursorUp(); break;
+            case "j": this.moveCursorDown(); break;
             case "x": this.board[this.cursor.x][this.cursor.y] = 0; break;
             case "D": ; break;
-            case "$": {
-                if (this.cursor.inInsertMode() || this.cursor.inDeleteMode()) {
-                    for (let i = this.cursor.y; i < this.width - 1; i++) {
-                        this.board[this.cursor.x][i] = this.cursor.inInsertMode() ? 1 : 0;
-                    }
-                }
-
-                this.cursor.y = this.width - 1;
-                break;
-            };
+            case "$": this.moveToRowEnd; break;
             case "d": {
                 if (this.cursor.inDeleteMode()) {
-                    deleteLine();
-                    this.cursor.switchToNormalMode();
+                    this.board[this.cursor.x].map(() => 0);
+                    this.cursor.switchToNormal();
                 } else {
-                    this.cursor.switchToDeleteMode();
+                    this.cursor.switchToDelete();
                 }
 
             };
         }
-
-        if (this.cursor.inInsertMode()) {
-            array[this.cursor.x][cursor.y] = 1;
-        }
-
-        numStr = "";
     }
 }
-
