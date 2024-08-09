@@ -2,6 +2,8 @@ export enum Mode {
     Insert,
     Normal,
     Visual,
+    VisualBlock,
+    VisualLine,
     Delete,
 }
 
@@ -20,7 +22,7 @@ export class Cursor {
     }
 
     inVisualMode() {
-        return this.mode == Mode.Visual;
+        return (this.mode == Mode.Visual || this.mode == Mode.VisualLine || this.mode == Mode.VisualBlock);
     }
 
     inDeleteMode() {
@@ -37,6 +39,16 @@ export class Cursor {
 
     switchToVisual() {
         this.mode = Mode.Visual;
+        this.visualStartIndex = [this.x, this.y]
+    }
+
+    switchToVisualBlock() {
+        this.mode = Mode.VisualBlock;
+        this.visualStartIndex = [this.x, this.y]
+    }
+
+    switchToVisualLine() {
+        this.mode = Mode.VisualLine;
         this.visualStartIndex = [this.x, this.y]
     }
 

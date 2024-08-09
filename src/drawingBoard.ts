@@ -12,6 +12,7 @@ export class DrawingBoard {
     moves = 1;
     drawingColor = "red";
     visualMask: string[][];
+    controlHeld = false;
 
     constructor(width: number, height: number) {
         this.board = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
@@ -130,6 +131,11 @@ export class DrawingBoard {
 
 
     handleInput(input: string) {
+        if (input === "Control") {
+            this.controlHeld = !this.controlHeld;
+            return;
+        }
+
         if (input == "0" && this.moves == 0) {
             this.moveToRowStart();
         } else {
@@ -140,7 +146,17 @@ export class DrawingBoard {
         }
 
         switch (input) {
-            case "i": this.cursor.switchToInsert(); break;
+            case "i": {
+                if (this.cursor.inVisualMode()) {
+                    const x = this.cursor.visualStartIndex[0];
+                    const y = this.cursor.visualStartIndex[1];
+                    this.drawBoard(x, this.cursor.x, y, this.cursor.y);
+                    this.visualMaskReset();
+                    this.cursor.switchToNormal();
+                } else {
+                    this.cursor.switchToInsert();
+                }
+            } break;
             case "Escape": {
                 this.visualMaskReset();
                 this.cursor.switchToNormal();
@@ -158,17 +174,25 @@ export class DrawingBoard {
                 } else {
                     this.cursor.switchToDelete();
                 }
-            }
-                break;
+            } break;
             case "V": {
                 if (this.cursor.inVisualMode()) {
                     this.visualMaskReset();
                     this.cursor.switchToNormal();
                 } else {
+                    this.cursor.switchToVisualLine();
+                }
+            } break;
+            case "v": {
+                if (this.cursor.inVisualMode()) {
+                    this.visualMaskReset();
+                    this.cursor.switchToNormal();
+                } else if (this.controlHeld) {
+                    this.cursor.switchToVisualBlock();
+                } else {
                     this.cursor.switchToVisual();
                 }
-            }
-                break;
+            } break;
         }
     }
 }
