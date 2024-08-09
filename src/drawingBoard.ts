@@ -141,7 +141,10 @@ export class DrawingBoard {
 
         switch (input) {
             case "i": this.cursor.switchToInsert(); break;
-            case "Escape": this.cursor.switchToNormal(); break;
+            case "Escape": {
+                this.visualMaskReset();
+                this.cursor.switchToNormal();
+            } break;
             case "l": this.moveCursorRight(); break;
             case "h": this.moveCursorLeft(); break;
             case "k": this.moveCursorUp(); break;
@@ -159,11 +162,10 @@ export class DrawingBoard {
                 break;
             case "V": {
                 if (this.cursor.inVisualMode()) {
+                    this.visualMaskReset();
                     this.cursor.switchToNormal();
-                    console.log("switced to normal");
                 } else {
                     this.cursor.switchToVisual();
-                    console.log("switced to visual");
                 }
             }
                 break;
