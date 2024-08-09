@@ -143,7 +143,14 @@ export class DrawingBoard {
             case "x": this.board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR; break;
             case "D": this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, this.width - 1); break;
             case "$": this.moveToRowEnd(); break;
-            case "d": this.cursor.inDeleteMode() ? this.deleteArea(this.cursor.x, this.cursor.x, 0, this.width - 1) : this.cursor.switchToDelete(); break;
+            case "d": {
+                if (this.cursor.inDeleteMode()) {
+                    this.deleteArea(this.cursor.x, this.cursor.x, 0, this.width - 1);
+                } else {
+                    this.cursor.switchToDelete();
+                }
+            }
+                break;
         }
     }
 }
