@@ -24,7 +24,7 @@ export class DrawingBoard {
     cursorColor(): string {
         if (this.cursor.inInsertMode()) {
             return this.drawingColor;
-        } else if (this.cursor.inVisualMode()) {
+        } else if (this.cursor.inAnyVisualMode()) {
             return VISUAL_COLOR;
         } else {
             return NORMAL_COLOR;
@@ -88,8 +88,8 @@ export class DrawingBoard {
     handleBoardChanges(cursorOldX: number, cursorNewX: number, cursorOldY: number, cursorNewY: number) {
         if (this.cursor.inInsertMode()) {
             this.drawBoard(cursorOldX, cursorNewX, cursorOldY, cursorNewY);
-        } else if (this.cursor.inVisualMode()) {
-            this.drawVisualBlockMask(cursorNewX, cursorNewY);
+        } else if (this.cursor.inAnyVisualMode()) {
+            this.fillVisualMask(cursorNewX, cursorNewY);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(cursorOldX, cursorNewX, cursorOldY, cursorNewY);
         }
@@ -108,14 +108,27 @@ export class DrawingBoard {
         this.visualMask = Array(this.height).fill(0).map(() => Array(this.width).fill(CLEAR_COLOR));
     }
 
-    drawVisualBlockMask(endX: number, endY: number) {
+    fillVisualMask(endX: number, endY: number) {
         this.visualMaskReset();
         const startX = this.cursor.visualStartIndex[0];
         const startY = this.cursor.visualStartIndex[1];
-        this.fillArea(startX, endX, startY, endY, VISUAL_COLOR, this.visualMask);
-        console.log(startX, endX, startY, endY);
+        if (this.cursor.inVisualBlockMode()) {
+            this.fillArea(startX, endX, startY, endY, VISUAL_COLOR, this.visualMask);
+        } else if (this.cursor.inVisualLineMode()) {
+            this.fillArea(startX, endX, 0, this.width - 1, VISUAL_COLOR, this.visualMask);
+        }
     }
 
+    drawVisualMask() {
+        this.visualMask.forEach((row, i) => row.forEach((color, j) => {
+            if (color === VISUAL_COLOR) {
+                this.board[i][j] = this.drawingColor;
+            }
+        }));
+    }
+
+    deleteVisualMask() {
+    }
 
     fillArea(xStart: number, xEnd: number, yStart: number, yEnd: number, color: string, array: string[][]) {
         const iStart = Math.min(xStart, xEnd);
@@ -147,10 +160,8 @@ export class DrawingBoard {
 
         switch (input) {
             case "i": {
-                if (this.cursor.inVisualMode()) {
-                    const x = this.cursor.visualStartIndex[0];
-                    const y = this.cursor.visualStartIndex[1];
-                    this.drawBoard(x, this.cursor.x, y, this.cursor.y);
+                if (this.cursor.inAnyVisualMode()) {
+                    this.drawVisualMask();
                     this.visualMaskReset();
                     this.cursor.switchToNormal();
                 } else {
@@ -176,15 +187,16 @@ export class DrawingBoard {
                 }
             } break;
             case "V": {
-                if (this.cursor.inVisualMode()) {
+                if (this.cursor.inAnyVisualMode()) {
                     this.visualMaskReset();
                     this.cursor.switchToNormal();
                 } else {
                     this.cursor.switchToVisualLine();
+                    this.fillVisualMask(this.cursor.x, this.cursor.y);
                 }
             } break;
             case "v": {
-                if (this.cursor.inVisualMode()) {
+                if (this.cursor.inAnyVisualMode()) {
                     this.visualMaskReset();
                     this.cursor.switchToNormal();
                 } else if (this.controlHeld) {

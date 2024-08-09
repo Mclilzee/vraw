@@ -21,8 +21,20 @@ export class Cursor {
         return this.mode == Mode.Normal;
     }
 
-    inVisualMode() {
+    inAnyVisualMode() {
         return (this.mode == Mode.Visual || this.mode == Mode.VisualLine || this.mode == Mode.VisualBlock);
+    }
+
+    inVisualMode() {
+        return this.mode == Mode.Visual;
+    }
+
+    inVisualBlockMode() {
+        return this.mode == Mode.VisualBlock;
+    }
+
+    inVisualLineMode() {
+        return this.mode == Mode.VisualLine;
     }
 
     inDeleteMode() {
