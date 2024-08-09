@@ -10,11 +10,14 @@ export class DrawingBoard {
     board: string[][];
     moves = 1;
     drawingColor = "red";
+    visualMask: string[][];
+    visualStartIndex: number | undefined = undefined;
 
     constructor(width: number, height: number) {
         this.board = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
         this.width = width;
         this.height = height;
+        this.visualMask = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
     }
 
     cursorColor(): string {
@@ -111,8 +114,8 @@ export class DrawingBoard {
     }
 
     fillArea(xStart: number, xEnd: number, yStart: number, yEnd: number, color: string) {
-        let iStart = Math.min(xStart, xEnd);
-        let iEnd = Math.max(xStart, xEnd);
+        const iStart = Math.min(xStart, xEnd);
+        const iEnd = Math.max(xStart, xEnd);
         const jStart = Math.min(yStart, yEnd);
         const jEnd = Math.max(yStart, yEnd);
         for (let i = iStart; i <= iEnd; i++) {
@@ -151,6 +154,14 @@ export class DrawingBoard {
                 }
             }
                 break;
+            case "V": {
+                if (this.cursor.inVisualMode()) {
+                    this.cursor.switchToNormal();
+                } else {
+                    this.cursor.switchToVisual();
+                }
+            }
+            break;
         }
     }
 }

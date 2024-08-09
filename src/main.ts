@@ -23,6 +23,8 @@ function draw(board: DrawingBoard) {
             ctx.strokeRect(j * width, i * height, width, height);
             ctx.fillStyle = board.board[i][j];
             ctx.fillRect(j * width, i * height, width, height);
+            ctx.fillStyle = board.visualMask[i][j];
+            ctx.fillRect(j * width, i * height, width, height);
         }
     }
 
