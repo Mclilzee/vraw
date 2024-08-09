@@ -2,6 +2,7 @@ import { Cursor } from "./cursor";
 const CELL_DEFAULT_COLOR = "#a5a5a5";
 const NORMAL_COLOR = "#00000080";
 const VISUAL_COLOR = "#0000F080";
+const CLEAR_COLOR = "#00000000";
 
 export class DrawingBoard {
     cursor = new Cursor();
@@ -11,18 +12,17 @@ export class DrawingBoard {
     moves = 1;
     drawingColor = "red";
     visualMask: string[][];
-    visualStartIndex: number | undefined = undefined;
 
     constructor(width: number, height: number) {
         this.board = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
         this.width = width;
         this.height = height;
-        this.visualMask = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
+        this.visualMask = Array(height).fill(0).map(() => Array(width).fill(CLEAR_COLOR));
     }
 
     cursorColor(): string {
         if (this.cursor.inInsertMode()) {
-                return this.drawingColor;
+            return this.drawingColor;
         } else if (this.cursor.inVisualMode()) {
             return VISUAL_COLOR;
         } else {
@@ -47,7 +47,9 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
+            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos, this.board);
+        } else if (this.cursor.inVisualMode()) {
+            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos, this.board);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         }
@@ -63,7 +65,7 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
+            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos, this.board);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         }
@@ -79,7 +81,9 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
+            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y, this.board);
+        }else if (this.cursor.inVisualMode()) {
+            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y, this.board);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         }
@@ -95,7 +99,9 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
+            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y, this.board);
+        } else if (this.cursor.inVisualMode()) {
+            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y, this.board);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         }
@@ -104,23 +110,23 @@ export class DrawingBoard {
         this.moves = 0;
     }
 
-    drawArea(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-        this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor);
+    drawArea(xStart: number, xEnd: number, yStart: number, yEnd: number, array: string[][]) {
+        this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor, array);
     }
 
     deleteArea(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-        this.fillArea(xStart, xEnd, yStart, yEnd, CELL_DEFAULT_COLOR);
+        this.fillArea(xStart, xEnd, yStart, yEnd, CELL_DEFAULT_COLOR, this.board);
         this.cursor.switchToNormal();
     }
 
-    fillArea(xStart: number, xEnd: number, yStart: number, yEnd: number, color: string) {
+    fillArea(xStart: number, xEnd: number, yStart: number, yEnd: number, color: string, array: string[][]) {
         const iStart = Math.min(xStart, xEnd);
         const iEnd = Math.max(xStart, xEnd);
         const jStart = Math.min(yStart, yEnd);
         const jEnd = Math.max(yStart, yEnd);
         for (let i = iStart; i <= iEnd; i++) {
             for (let j = jStart; j <= jEnd; j++) {
-                this.board[i][j] = color;
+                array[i][j] = color;
             }
         }
     }
@@ -157,11 +163,13 @@ export class DrawingBoard {
             case "V": {
                 if (this.cursor.inVisualMode()) {
                     this.cursor.switchToNormal();
+                    console.log("switced to normal");
                 } else {
                     this.cursor.switchToVisual();
+                    console.log("switced to visual");
                 }
             }
-            break;
+                break;
         }
     }
 }
