@@ -45,11 +45,10 @@ export class DrawingBoard {
         if (newPos > this.width - 1) {
             newPos = this.width - 1;
         }
-
         if (this.cursor.inInsertMode()) {
-            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos, this.board);
+            this.drawBoard(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         } else if (this.cursor.inVisualMode()) {
-            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos, this.board);
+            this.drawVisualMask(this.cursor.x, newPos);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         }
@@ -63,9 +62,10 @@ export class DrawingBoard {
         if (newPos < 0) {
             newPos = 0;
         }
-
         if (this.cursor.inInsertMode()) {
-            this.drawArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos, this.board);
+            this.drawBoard(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
+        } else if (this.cursor.inVisualMode()) {
+            this.drawVisualMask(this.cursor.x, newPos);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         }
@@ -81,9 +81,9 @@ export class DrawingBoard {
         }
 
         if (this.cursor.inInsertMode()) {
-            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y, this.board);
-        }else if (this.cursor.inVisualMode()) {
-            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y, this.board);
+            this.drawBoard(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
+        } else if (this.cursor.inVisualMode()) {
+            this.drawVisualMask(newPos, this.cursor.y);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         }
@@ -97,11 +97,10 @@ export class DrawingBoard {
         if (newPos > this.height - 1) {
             newPos = this.height - 1;
         }
-
         if (this.cursor.inInsertMode()) {
-            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y, this.board);
+            this.drawBoard(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         } else if (this.cursor.inVisualMode()) {
-            this.drawArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y, this.board);
+            this.drawVisualMask(newPos, this.cursor.y);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         }
@@ -110,14 +109,27 @@ export class DrawingBoard {
         this.moves = 0;
     }
 
-    drawArea(xStart: number, xEnd: number, yStart: number, yEnd: number, array: string[][]) {
-        this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor, array);
+    drawBoard(xStart: number, xEnd: number, yStart: number, yEnd: number) {
+        this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor, this.board);
     }
 
     deleteArea(xStart: number, xEnd: number, yStart: number, yEnd: number) {
         this.fillArea(xStart, xEnd, yStart, yEnd, CELL_DEFAULT_COLOR, this.board);
         this.cursor.switchToNormal();
     }
+
+    visualMaskReset() {
+        this.visualMask = Array(this.height).fill(0).map(() => Array(this.width).fill(CLEAR_COLOR));
+    }
+
+    drawVisualMask(endX: number, endY: number) {
+        this.visualMaskReset();
+        const startX = this.cursor.visualStartIndex[0];
+        const startY = this.cursor.visualStartIndex[1];
+        this.fillArea(startX, endX, startY, endY, VISUAL_COLOR, this.visualMask);
+        console.log(startX, endX, startY, endY);
+    }
+
 
     fillArea(xStart: number, xEnd: number, yStart: number, yEnd: number, color: string, array: string[][]) {
         const iStart = Math.min(xStart, xEnd);
