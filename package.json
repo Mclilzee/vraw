@@ -9,7 +9,14 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "@eslint/js": "^9.8.0",
+    "eslint": "^9.8.0",
+    "globals": "^15.9.0",
     "typescript": "^5.2.2",
+    "typescript-eslint": "^8.0.1",
     "vite": "^5.3.4"
+  },
+  "override": {
+    "eslint": "^9.8.0",
   }
 }
