@@ -45,14 +45,8 @@ export class DrawingBoard {
         if (newPos > this.width - 1) {
             newPos = this.width - 1;
         }
-        if (this.cursor.inInsertMode()) {
-            this.drawBoard(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
-        } else if (this.cursor.inVisualMode()) {
-            this.drawVisualBlockMask(this.cursor.x, newPos);
-        } else if (this.cursor.inDeleteMode()) {
-            this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
-        }
 
+        this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         this.cursor.y = newPos;
         this.moves = 0;
     }
@@ -62,14 +56,8 @@ export class DrawingBoard {
         if (newPos < 0) {
             newPos = 0;
         }
-        if (this.cursor.inInsertMode()) {
-            this.drawBoard(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
-        } else if (this.cursor.inVisualMode()) {
-            this.drawVisualBlockMask(this.cursor.x, newPos);
-        } else if (this.cursor.inDeleteMode()) {
-            this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
-        }
 
+        this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         this.cursor.y = newPos;
         this.moves = 0;
     }
@@ -80,14 +68,7 @@ export class DrawingBoard {
             newPos = 0;
         }
 
-        if (this.cursor.inInsertMode()) {
-            this.drawBoard(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
-        } else if (this.cursor.inVisualMode()) {
-            this.drawVisualBlockMask(newPos, this.cursor.y);
-        } else if (this.cursor.inDeleteMode()) {
-            this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
-        }
-
+        this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         this.cursor.x = newPos;
         this.moves = 0;
     }
@@ -97,16 +78,20 @@ export class DrawingBoard {
         if (newPos > this.height - 1) {
             newPos = this.height - 1;
         }
-        if (this.cursor.inInsertMode()) {
-            this.drawBoard(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
-        } else if (this.cursor.inVisualMode()) {
-            this.drawVisualBlockMask(newPos, this.cursor.y);
-        } else if (this.cursor.inDeleteMode()) {
-            this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
-        }
 
+        this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         this.cursor.x = newPos;
         this.moves = 0;
+    }
+
+    handleBoardChanges(cursorOldX: number, cursorNewX: number, cursorOldY: number, cursorNewY: number) {
+        if (this.cursor.inInsertMode()) {
+            this.drawBoard(cursorOldX, cursorNewX, cursorOldY, cursorNewY);
+        } else if (this.cursor.inVisualMode()) {
+            this.drawVisualBlockMask(cursorNewX, cursorNewY);
+        } else if (this.cursor.inDeleteMode()) {
+            this.deleteArea(cursorOldX, cursorNewX, cursorOldY, cursorNewY);
+        }
     }
 
     drawBoard(xStart: number, xEnd: number, yStart: number, yEnd: number) {
