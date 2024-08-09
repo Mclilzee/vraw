@@ -48,7 +48,7 @@ export class DrawingBoard {
         if (this.cursor.inInsertMode()) {
             this.drawBoard(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         } else if (this.cursor.inVisualMode()) {
-            this.drawVisualMask(this.cursor.x, newPos);
+            this.drawVisualBlockMask(this.cursor.x, newPos);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         }
@@ -65,7 +65,7 @@ export class DrawingBoard {
         if (this.cursor.inInsertMode()) {
             this.drawBoard(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         } else if (this.cursor.inVisualMode()) {
-            this.drawVisualMask(this.cursor.x, newPos);
+            this.drawVisualBlockMask(this.cursor.x, newPos);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         }
@@ -83,7 +83,7 @@ export class DrawingBoard {
         if (this.cursor.inInsertMode()) {
             this.drawBoard(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         } else if (this.cursor.inVisualMode()) {
-            this.drawVisualMask(newPos, this.cursor.y);
+            this.drawVisualBlockMask(newPos, this.cursor.y);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         }
@@ -100,7 +100,7 @@ export class DrawingBoard {
         if (this.cursor.inInsertMode()) {
             this.drawBoard(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         } else if (this.cursor.inVisualMode()) {
-            this.drawVisualMask(newPos, this.cursor.y);
+            this.drawVisualBlockMask(newPos, this.cursor.y);
         } else if (this.cursor.inDeleteMode()) {
             this.deleteArea(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         }
@@ -122,7 +122,7 @@ export class DrawingBoard {
         this.visualMask = Array(this.height).fill(0).map(() => Array(this.width).fill(CLEAR_COLOR));
     }
 
-    drawVisualMask(endX: number, endY: number) {
+    drawVisualBlockMask(endX: number, endY: number) {
         this.visualMaskReset();
         const startX = this.cursor.visualStartIndex[0];
         const startY = this.cursor.visualStartIndex[1];
