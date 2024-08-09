@@ -1,3 +1,7 @@
+const INSERT_COLOR = "#00F000F0";
+const NORMAL_COLOR = "#101010F0";
+const VISUAL_COLOR = "#0000F0F0";
+
 export enum Mode {
     Insert,
     Normal,
@@ -8,7 +12,7 @@ export enum Mode {
 export class Cursor {
     x = 0;
     y = 0;
-    mode =  Mode.Normal;
+    mode = Mode.Normal;
 
     inInsertMode() {
         return this.mode == Mode.Insert;
@@ -40,5 +44,16 @@ export class Cursor {
 
     switchToDelete() {
         this.mode = Mode.Delete;
+    }
+
+    color(): string {
+        switch (this.mode) {
+            case Mode.Insert:
+                return INSERT_COLOR
+            case Mode.Visual:
+                return VISUAL_COLOR
+            default:
+                return NORMAL_COLOR
+        }
     }
 }

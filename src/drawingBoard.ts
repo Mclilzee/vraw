@@ -1,5 +1,7 @@
 import { Cursor } from "./cursor";
 const CELL_DEFAULT_COLOR = "#a5a5a5";
+const NORMAL_COLOR = "#00000080";
+const VISUAL_COLOR = "#0000F080";
 
 export class DrawingBoard {
     cursor = new Cursor();
@@ -7,7 +9,7 @@ export class DrawingBoard {
     height: number;
     board: string[][];
     moves = 1;
-    drawingColor = "black";
+    drawingColor = "red";
 
     constructor(width: number, height: number) {
         this.board = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
@@ -15,6 +17,15 @@ export class DrawingBoard {
         this.height = height;
     }
 
+    cursorColor(): string {
+        if (this.cursor.inInsertMode()) {
+                return this.drawingColor;
+        } else if (this.cursor.inVisualMode()) {
+            return VISUAL_COLOR;
+        } else {
+            return NORMAL_COLOR;
+        }
+    }
 
     moveToRowStart() {
         this.moves = this.cursor.y;

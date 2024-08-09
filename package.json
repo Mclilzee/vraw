@@ -8,6 +8,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
+  "override": {
+    "eslint": "^9.8.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
     "eslint": "^9.8.0",
@@ -15,8 +18,5 @@
     "typescript": "^5.2.2",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.3.4"
-  },
-  "override": {
-    "eslint": "^9.8.0",
   }
 }

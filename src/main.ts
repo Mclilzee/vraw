@@ -26,6 +26,6 @@ function draw(board: DrawingBoard) {
         }
     }
 
-    ctx.fillStyle = board.cursor.inNormalMode() ? "black" : "red"
+    ctx.fillStyle = board.cursorColor();
     ctx.fillRect(board.cursor.y * width, board.cursor.x * height, width, height);
 }
