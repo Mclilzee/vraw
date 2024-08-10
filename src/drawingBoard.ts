@@ -116,7 +116,25 @@ export class DrawingBoard {
       this.fillArea(startX, endX, startY, endY, VISUAL_COLOR, this.visualMask);
     } else if (this.cursor.inVisualLineMode()) {
       this.fillArea(startX, endX, 0, this.width - 1, VISUAL_COLOR, this.visualMask);
+    } else {
+      this.fillVisualNormalMode(startX, endX, startY, endY);
     }
+  }
+
+  fillVisualNormalMode(startX: number, endX: number, startY: number, endY: number) {
+    const startRow = Math.min(startX, endX);
+    const endRow = Math.max(startX, endX);
+    for (let i = startRow + 1; i < endRow; ++i) {
+      this.fillArea(i, i, 0, this.width - 1, VISUAL_COLOR, this.visualMask);
+    }
+
+    //for (let i = startX; i <= endX; ++i) {
+    //  for (let j = startY; j <= endY; ++j) {
+    //    if (i === endX) {
+    //      this.fillArea(startX, endX, startY, endY, VISUAL_COLOR, this.visualMask);
+    //    }
+    //  }
+    //}
   }
 
   drawVisualMask() {
@@ -213,6 +231,7 @@ export class DrawingBoard {
           this.cursor.switchToVisualBlock();
         } else {
           this.cursor.switchToVisual();
+          this.fillVisualMask(this.cursor.x, this.cursor.y);
         }
       } break;
     }
