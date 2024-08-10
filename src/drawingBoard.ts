@@ -153,11 +153,6 @@ export class DrawingBoard {
 
 
   handleInput(input: string) {
-    if (input === "Control") {
-      this.controlHeld = !this.controlHeld;
-      return;
-    }
-
     if (input == "0" && this.moves == 0) {
       this.moveToRowStart();
     } else {

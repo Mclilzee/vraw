@@ -11,8 +11,18 @@ canvas.height = CANVAS_HEIGHT;
 
 draw(drawingBoard);
 addEventListener("keydown", (e) => {
-    drawingBoard.handleInput(e.key);
-    draw(drawingBoard);
+    if (e.key == "Control") {
+        drawingBoard.controlHeld = true;
+    } else {
+        drawingBoard.handleInput(e.key);
+        draw(drawingBoard);
+    }
+});
+
+addEventListener("keyup", (e) => {
+    if (e.key == "Control") {
+        drawingBoard.controlHeld = false;
+    }
 });
 
 function draw(board: DrawingBoard) {
