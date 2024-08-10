@@ -128,13 +128,15 @@ export class DrawingBoard {
       this.fillArea(i, i, 0, this.width - 1, VISUAL_COLOR, this.visualMask);
     }
 
-    //for (let i = startX; i <= endX; ++i) {
-    //  for (let j = startY; j <= endY; ++j) {
-    //    if (i === endX) {
-    //      this.fillArea(startX, endX, startY, endY, VISUAL_COLOR, this.visualMask);
-    //    }
-    //  }
-    //}
+    if (startX > endX) {
+      this.fillArea(startX, startX, 0, startY, VISUAL_COLOR, this.visualMask);
+      this.fillArea(endX, endX, endY, this.width - 1, VISUAL_COLOR, this.visualMask);
+    } else if (startX < endX) {
+      this.fillArea(startX, startX, startY, this.width - 1, VISUAL_COLOR, this.visualMask);
+      this.fillArea(endX, endX, 0, endY, VISUAL_COLOR, this.visualMask);
+    } else {
+      this.fillArea(startX, endX, startY, endY, VISUAL_COLOR, this.visualMask);
+    }
   }
 
   drawVisualMask() {
