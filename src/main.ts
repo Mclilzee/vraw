@@ -1,6 +1,7 @@
 import './style.css'
 import { canvas, ctx } from './elements';
 import { DrawingBoard } from './drawingBoard';
+const relativeNumbers = true;
 const TILE_SIZE = 40;
 const CANVAS_WIDTH = 600;
 const CANVAS_HEIGHT = 600;
@@ -57,16 +58,24 @@ function drawNumbers(board: DrawingBoard) {
     ctx.fillStyle = "white";
     ctx.font = "12px Fira Sans";
     ctx.textAlign = "center";
-    ctx.fillText(verticalNumbers[i].toString(), 0 + V_NUMBER_PADDING / 2, y);
+    const number = verticalNumbers[i];
+    if (number === 0) {
+      ctx.fillStyle = "red";
+    }
+    ctx.fillText(number.toString(), 0 + V_NUMBER_PADDING / 2, y);
   }
 
   const horizontalNumbers = getNumbers(board.cursor.y, board.width);
   for (let i = 0; i < horizontalNumbers.length; i++) {
     const x = i * width + V_NUMBER_PADDING + V_NUMBER_PADDING / 4;
     ctx.fillStyle = "white";
-    ctx.font = "12px Fira Sans";
+    ctx.font = "10px Fira Sans";
     ctx.textAlign = "center";
-    ctx.fillText(horizontalNumbers[i].toString(), x, CANVAS_WIDTH + V_NUMBER_PADDING / 2);
+    const number = horizontalNumbers[i];
+    if (number === 0) {
+      ctx.fillStyle = "red";
+    }
+    ctx.fillText(number.toString(), x, CANVAS_WIDTH + V_NUMBER_PADDING / 2);
   }
 }
 
