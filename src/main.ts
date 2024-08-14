@@ -49,6 +49,7 @@ function draw(board: DrawingBoard) {
   ctx.fillRect(board.cursor.y * width + NUMBER_PADDING, board.cursor.x * height, width, height);
   drawNumbers(board);
   drawStatusBar(board.cursor.x + 1, board.cursor.y + 1);
+  drawStatusBarInfo(board);
 }
 
 function drawNumbers(board: DrawingBoard) {
@@ -105,4 +106,5 @@ function drawStatusBar(cursorRow: number, cursorColumn: number) {
 
 // TODO add ability to see which mode is cursor in, and command into
 function drawStatusBarInfo(board: DrawingBoard) {
+  return board.cursor.x > 0 ? 0 : 1;
 }
