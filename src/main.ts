@@ -1,6 +1,7 @@
 import './style.css'
 import { canvas, ctx } from './elements';
 import { DrawingBoard } from './drawingBoard';
+
 const TILE_SIZE = 40;
 const BOARD_WIDTH = 600;
 const BOARD_HEIGHT = 600;
