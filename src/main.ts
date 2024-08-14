@@ -6,11 +6,13 @@ const BOARD_WIDTH = 600;
 const BOARD_HEIGHT = 600;
 const NUMBER_PADDING = 30;
 const BAR_HEIGHT = 15;
+const CURSOR_POSITION_RIGHT_PADDING = 15;
 const TEXT_PADDING = 3;
+const STATUS_BAR_INFO_HEIGHT = 20;
 
 const drawingBoard = new DrawingBoard(TILE_SIZE, TILE_SIZE);
 canvas.width = BOARD_WIDTH + NUMBER_PADDING * 2;
-canvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_HEIGHT;
+canvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_HEIGHT + STATUS_BAR_INFO_HEIGHT;
 
 draw(drawingBoard);
 addEventListener("keydown", (e) => {
@@ -46,7 +48,7 @@ function draw(board: DrawingBoard) {
   ctx.fillStyle = board.cursorColor();
   ctx.fillRect(board.cursor.y * width + NUMBER_PADDING, board.cursor.x * height, width, height);
   drawNumbers(board);
-  drawStatusBar(board);
+  drawStatusBar(board.cursor.x + 1, board.cursor.y + 1);
 }
 
 function drawNumbers(board: DrawingBoard) {
@@ -89,11 +91,17 @@ function getNumbers(anchor: number, size: number) {
   return array;
 }
 
-function drawStatusBar(board: DrawingBoard) {
+function drawStatusBar(cursorRow: number, cursorColumn: number) {
   const y = BOARD_WIDTH + NUMBER_PADDING;
   ctx.fillStyle = "grey";
   ctx.fillRect(0, y, canvas.width, BAR_HEIGHT);
   ctx.fillStyle = "white";
+  ctx.font = "bold 11px Fira Sans";
   ctx.textAlign = "left";
   ctx.fillText("vim/drawing.ts", TEXT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
+
+  ctx.fillText(`${cursorRow}, ${cursorColumn}`, BOARD_WIDTH - CURSOR_POSITION_RIGHT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
+}
+
+function drawStatusBarInfo(board: DrawingBoard) {
 }
