@@ -103,5 +103,6 @@ function drawStatusBar(cursorRow: number, cursorColumn: number) {
   ctx.fillText(`${cursorRow}, ${cursorColumn}`, BOARD_WIDTH - CURSOR_POSITION_RIGHT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
 }
 
+// TODO add ability to see which mode is cursor in, and command into
 function drawStatusBarInfo(board: DrawingBoard) {
 }
