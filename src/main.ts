@@ -4,13 +4,13 @@ import { DrawingBoard } from './drawingBoard';
 const TILE_SIZE = 40;
 const BOARD_WIDTH = 600;
 const BOARD_HEIGHT = 600;
-const MARGIN = 100;
 const NUMBER_PADDING = 30;
-const BAR_PADDING = 30;
+const BAR_HEIGHT = 15;
+const TEXT_PADDING = 3;
 
 const drawingBoard = new DrawingBoard(TILE_SIZE, TILE_SIZE);
-canvas.width = BOARD_WIDTH + NUMBER_PADDING + MARGIN;
-canvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_PADDING + MARGIN;
+canvas.width = BOARD_WIDTH + NUMBER_PADDING * 2;
+canvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_HEIGHT;
 
 draw(drawingBoard);
 addEventListener("keydown", (e) => {
@@ -34,7 +34,7 @@ function draw(board: DrawingBoard) {
   const height = BOARD_HEIGHT / board.height;
   for (let i = 0; i < board.width; i++) {
     for (let j = 0; j < board.height; j++) {
-      const x = (j * width + NUMBER_PADDING) + MARGIN / 2;
+      const x = j * width + NUMBER_PADDING;
       ctx.strokeRect(x, i * height, width, height);
       ctx.fillStyle = board.board[i][j];
       ctx.fillRect(x, i * height, width, height);
@@ -44,7 +44,7 @@ function draw(board: DrawingBoard) {
   }
 
   ctx.fillStyle = board.cursorColor();
-  ctx.fillRect(board.cursor.y * width + NUMBER_PADDING + MARGIN / 2, board.cursor.x * height, width, height);
+  ctx.fillRect(board.cursor.y * width + NUMBER_PADDING, board.cursor.x * height, width, height);
   drawNumbers(board);
   drawStatusBar(board);
 }
@@ -55,7 +55,7 @@ function drawNumbers(board: DrawingBoard) {
   const width = BOARD_WIDTH / board.width;
 
   for (let i = 0; i < verticalNumbers.length; i++) {
-    const y = i * height + (NUMBER_PADDING / 2) - 3;
+    const y = i * height + (NUMBER_PADDING / 2) - TEXT_PADDING;
     ctx.fillStyle = "white";
     ctx.font = "12px Fira Sans";
     ctx.textAlign = "center";
@@ -63,12 +63,12 @@ function drawNumbers(board: DrawingBoard) {
     if (number === 0) {
       ctx.fillStyle = "red";
     }
-    ctx.fillText(number.toString(), 0 + NUMBER_PADDING / 2 + MARGIN / 2, y);
+    ctx.fillText(number.toString(), NUMBER_PADDING / 2, y);
   }
 
   const horizontalNumbers = getNumbers(board.cursor.y, board.width);
   for (let i = 0; i < horizontalNumbers.length; i++) {
-    const x = i * width + NUMBER_PADDING + NUMBER_PADDING / 4 + MARGIN / 2;
+    const x = i * width + NUMBER_PADDING + NUMBER_PADDING / 4;
     ctx.fillStyle = "white";
     ctx.font = "10px Fira Sans";
     ctx.textAlign = "center";
@@ -90,5 +90,10 @@ function getNumbers(anchor: number, size: number) {
 }
 
 function drawStatusBar(board: DrawingBoard) {
-
+  const y = BOARD_WIDTH + NUMBER_PADDING;
+  ctx.fillStyle = "grey";
+  ctx.fillRect(0, y, canvas.width, BAR_HEIGHT);
+  ctx.fillStyle = "white";
+  ctx.textAlign = "left";
+  ctx.fillText("vim/drawing.ts", TEXT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
 }
