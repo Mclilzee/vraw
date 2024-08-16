@@ -105,7 +105,18 @@ function drawStatusBar(cursorRow: number, cursorColumn: number) {
   ctx.fillText(`${cursorRow}, ${cursorColumn}`, BOARD_WIDTH - CURSOR_POSITION_RIGHT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
 }
 
-// TODO add ability to see which mode is cursor in, and command into
 function drawStatusBarInfo(board: DrawingBoard) {
-  return board.cursor.x > 0 ? 0 : 1;
+  let mode = "NORMAL";
+  if (board.cursor.inInsertMode()) {
+    mode = "INSERT";
+  } else if (board.cursor.inVisualMode()) {
+    mode = "VISUAL";
+  } else if (board.cursor.inVisualLineMode()) {
+    mode = "VISUAL LINE";
+  } else if (board.cursor.inVisualBlockMode()) {
+    mode = "VISUAL BLOCK";
+  }
+
+  ctx.font = "15px Fira Sans";
+  ctx.fillText(`-- ${mode} --`, TEXT_PADDING, canvas.height, canvas.width);
 }
