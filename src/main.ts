@@ -1,6 +1,6 @@
 import './style.css'
 import { DrawingBoard } from './drawingBoard';
-import render from "./render";
+import {renderBoard, renderStatusInfo} from "./render";
 
 enum Engine {
   Input,
@@ -12,14 +12,16 @@ const ROWS = 40;
 const COLUMNS = 40;
 const drawingBoard = new DrawingBoard(ROWS, COLUMNS);
 
-render(drawingBoard);
+renderBoard(drawingBoard);
+renderStatusInfo(drawingBoard);
 addEventListener("keydown", (e) => {
   if (currentEngine === Engine.Input) {
     if (e.key == "Control") {
       drawingBoard.controlHeld = true;
     } else {
       drawingBoard.handleInput(e.key);
-      render(drawingBoard);
+      renderBoard(drawingBoard);
+      renderStatusInfo(drawingBoard);
     }
   }
 });

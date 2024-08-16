@@ -10,9 +10,11 @@ const TEXT_PADDING = 3;
 const STATUS_BAR_INFO_HEIGHT = 20;
 
 boardCanvas.width = BOARD_WIDTH + NUMBER_PADDING * 2;
-boardCanvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_HEIGHT + STATUS_BAR_INFO_HEIGHT;
+boardCanvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_HEIGHT;
+statusInfo.width = boardCanvas.width;
+statusInfo.height = STATUS_BAR_INFO_HEIGHT;
 
-export default function draw(board: DrawingBoard) {
+export function renderBoard(board: DrawingBoard) {
   boardCtx.reset();
   const width = BOARD_WIDTH / board.columns;
   const height = BOARD_HEIGHT / board.rows;
@@ -29,12 +31,29 @@ export default function draw(board: DrawingBoard) {
 
   boardCtx.fillStyle = board.cursorColor();
   boardCtx.fillRect(board.cursor.y * width + NUMBER_PADDING, board.cursor.x * height, width, height);
-  drawNumbers(board);
-  drawStatusBar(board.cursor.x + 1, board.cursor.y + 1);
-  drawStatusBarInfo(board);
+  renderBoardNumbers(board);
+  renderBoardStatusBar(board.cursor.x + 1, board.cursor.y + 1);
 }
 
-function drawNumbers(board: DrawingBoard) {
+export function renderStatusInfo(board: DrawingBoard) {
+  statusInfoCtx.reset();
+  let mode = "NORMAL";
+  if (board.cursor.inInsertMode()) {
+    mode = "INSERT";
+  } else if (board.cursor.inVisualMode()) {
+    mode = "VISUAL";
+  } else if (board.cursor.inVisualLineMode()) {
+    mode = "VISUAL LINE";
+  } else if (board.cursor.inVisualBlockMode()) {
+    mode = "VISUAL BLOCK";
+  }
+
+  statusInfoCtx.fillStyle = "white";
+  statusInfoCtx.font = "15px Fira Sans";
+  statusInfoCtx.fillText(`-- ${mode} --`, TEXT_PADDING, STATUS_BAR_INFO_HEIGHT);
+}
+
+function renderBoardNumbers(board: DrawingBoard) {
   const verticalNumbers = getNumbers(board.cursor.x, board.rows);
   const height = BOARD_HEIGHT / board.rows;
   const width = BOARD_WIDTH / board.columns;
@@ -74,7 +93,7 @@ function getNumbers(anchor: number, size: number) {
   return array;
 }
 
-function drawStatusBar(cursorRow: number, cursorColumn: number) {
+function renderBoardStatusBar(cursorRow: number, cursorColumn: number) {
   const y = BOARD_WIDTH + NUMBER_PADDING;
   boardCtx.fillStyle = "grey";
   boardCtx.fillRect(0, y, boardCanvas.width, BAR_HEIGHT);
@@ -84,20 +103,4 @@ function drawStatusBar(cursorRow: number, cursorColumn: number) {
   boardCtx.fillText("vim/drawing.ts", TEXT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
 
   boardCtx.fillText(`${cursorRow}, ${cursorColumn}`, BOARD_WIDTH - CURSOR_POSITION_RIGHT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
-}
-
-function drawStatusBarInfo(board: DrawingBoard) {
-  let mode = "NORMAL";
-  if (board.cursor.inInsertMode()) {
-    mode = "INSERT";
-  } else if (board.cursor.inVisualMode()) {
-    mode = "VISUAL";
-  } else if (board.cursor.inVisualLineMode()) {
-    mode = "VISUAL LINE";
-  } else if (board.cursor.inVisualBlockMode()) {
-    mode = "VISUAL BLOCK";
-  }
-
-  boardCtx.font = "15px Fira Sans";
-  boardCtx.fillText(`-- ${mode} --`, TEXT_PADDING, boardCanvas.height, boardCanvas.width);
 }
