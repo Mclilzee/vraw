@@ -36,6 +36,14 @@ export class DrawingBoard {
     return array;
   }
 
+  getCurrentBoardAndUpdateHistory(): string[][] {
+    const board = this.getCurrentBoard();
+    this.history[++this.historyIndex] = board;
+    this.history = this.history.slice(0, this.historyIndex + 1);
+    console.log(this.history);
+    return board;
+  }
+
   cursorColor(): string {
     if (this.cursor.inInsertMode()) {
       return this.drawingColor;
@@ -115,16 +123,12 @@ export class DrawingBoard {
   }
 
   drawBoard(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-    const board = this.getCurrentBoard();
-    this.history.push(board);
-    this.historyIndex++;
+    const board = this.getCurrentBoardAndUpdateHistory();
     this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor, board);
   }
 
   deleteArea(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-    const board = this.getCurrentBoard();
-    this.history.push(board);
-    this.historyIndex++;
+    const board = this.getCurrentBoardAndUpdateHistory();
     this.fillArea(xStart, xEnd, yStart, yEnd, CELL_DEFAULT_COLOR, board);
     this.cursor.switchToNormal();
   }
@@ -165,9 +169,9 @@ export class DrawingBoard {
   }
 
   drawVisualMask() {
+    const board = this.getCurrentBoardAndUpdateHistory();
     this.visualMask.forEach((row, i) => row.forEach((color, j) => {
       if (color === VISUAL_COLOR) {
-        const board = this.getCurrentBoard();
         board[i][j] = this.drawingColor;
       }
     }));
@@ -176,9 +180,9 @@ export class DrawingBoard {
   }
 
   deleteVisualMask() {
+    const board = this.getCurrentBoardAndUpdateHistory();
     this.visualMask.forEach((row, i) => row.forEach((color, j) => {
       if (color === VISUAL_COLOR) {
-        const board = this.getCurrentBoard();
         board[i][j] = CELL_DEFAULT_COLOR;
       }
     }));
@@ -196,7 +200,6 @@ export class DrawingBoard {
         array[i][j] = color;
       }
     }
-
   }
 
   handleInput(input: string) {
@@ -229,8 +232,7 @@ export class DrawingBoard {
         if (this.cursor.inAnyVisualMode()) {
           this.deleteVisualMask()
         } else {
-          const board = this.getCurrentBoard();
-          this.historyIndex = this.history.push(board) - 1;
+          const board = this.getCurrentBoardAndUpdateHistory();
           board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR;
         }
       } break;
@@ -267,6 +269,11 @@ export class DrawingBoard {
       } break;
         case "u": {
         this.historyIndex = Math.max(this.historyIndex - 1, 0);
+      } break;
+        case "r": {
+        if (this.controlHeld) {
+          this.historyIndex = Math.min(this.history.length, this.historyIndex + 1);
+        }
       } break;
     }
   }

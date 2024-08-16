@@ -16,13 +16,14 @@ statusInfo.height = STATUS_BAR_INFO_HEIGHT;
 
 export function renderBoard(board: DrawingBoard) {
   boardCtx.reset();
+  const currentBoard = board.getCurrentBoard();
   const width = BOARD_WIDTH / board.columns;
   const height = BOARD_HEIGHT / board.rows;
   for (let i = 0; i < board.rows; i++) {
     for (let j = 0; j < board.columns; j++) {
       const x = j * width + NUMBER_PADDING;
       boardCtx.strokeRect(x, i * height, width, height);
-      boardCtx.fillStyle = board.getCurrentBoard()[i][j];
+      boardCtx.fillStyle = currentBoard[i][j];
       boardCtx.fillRect(x, i * height, width, height);
       boardCtx.fillStyle = board.visualMask[i][j];
       boardCtx.fillRect(x, i * height, width, height);
