@@ -48,7 +48,7 @@ export function renderStatusInfo(board: DrawingBoard) {
     mode = "VISUAL BLOCK";
   }
 
-  statusInfoCtx.fillStyle = "white";
+  statusInfoCtx.fillStyle = "orange";
   statusInfoCtx.font = "15px Fira Sans";
   statusInfoCtx.fillText(`-- ${mode} --`, TEXT_PADDING, STATUS_BAR_INFO_HEIGHT);
 }
