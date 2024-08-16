@@ -1,6 +1,6 @@
 import './style.css'
 import { DrawingBoard } from './drawingBoard';
-import {renderBoard, renderStatusInfo} from "./render";
+import { renderBoard, renderStatusInfo } from "./render";
 
 enum Engine {
   Input,
@@ -13,7 +13,7 @@ const COLUMNS = 40;
 const drawingBoard = new DrawingBoard(ROWS, COLUMNS);
 
 renderBoard(drawingBoard);
-renderStatusInfo(drawingBoard);
+renderStatusInfo(drawingBoard.cursor.getCursorLineInfo(), "orange");
 addEventListener("keydown", (e) => {
   e.preventDefault();
   if (currentEngine === Engine.Input) {
@@ -22,9 +22,10 @@ addEventListener("keydown", (e) => {
     } else {
       drawingBoard.handleInput(e.key);
       renderBoard(drawingBoard);
-      renderStatusInfo(drawingBoard);
+      renderStatusInfo(drawingBoard.cursor.getCursorLineInfo(), "orange");
     }
   }
+
 });
 
 addEventListener("keyup", (e) => {

@@ -36,22 +36,11 @@ export function renderBoard(board: DrawingBoard) {
   renderBoardStatusBar(board.cursor.x + 1, board.cursor.y + 1);
 }
 
-export function renderStatusInfo(board: DrawingBoard) {
+export function renderStatusInfo(info: string, color: string) {
   statusInfoCtx.reset();
-  let mode = "NORMAL";
-  if (board.cursor.inInsertMode()) {
-    mode = "INSERT";
-  } else if (board.cursor.inVisualMode()) {
-    mode = "VISUAL";
-  } else if (board.cursor.inVisualLineMode()) {
-    mode = "VISUAL LINE";
-  } else if (board.cursor.inVisualBlockMode()) {
-    mode = "VISUAL BLOCK";
-  }
-
-  statusInfoCtx.fillStyle = "orange";
+  statusInfoCtx.fillStyle = color;
   statusInfoCtx.font = "15px Fira Sans";
-  statusInfoCtx.fillText(`-- ${mode} --`, TEXT_PADDING, STATUS_BAR_INFO_HEIGHT);
+  statusInfoCtx.fillText(info, TEXT_PADDING, STATUS_BAR_INFO_HEIGHT);
 }
 
 function renderBoardNumbers(board: DrawingBoard) {
