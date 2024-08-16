@@ -6,18 +6,18 @@ const CLEAR_COLOR = "#00000000";
 
 export class DrawingBoard {
   cursor = new Cursor();
-  width: number;
-  height: number;
+  rows: number;
+  columns: number;
   board: string[][];
   moves = 1;
   drawingColor = "red";
   visualMask: string[][];
   controlHeld = false;
 
-  constructor(width: number, height: number) {
+  constructor(height: number, width: number) {
     this.board = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
-    this.width = width;
-    this.height = height;
+    this.rows = height;
+    this.columns = width;
     this.visualMask = Array(height).fill(0).map(() => Array(width).fill(CLEAR_COLOR));
   }
 
@@ -37,14 +37,14 @@ export class DrawingBoard {
   }
 
   moveToRowEnd() {
-    this.moves = this.width - 1 - this.cursor.y;
+    this.moves = this.rows - 1 - this.cursor.y;
     this.moveCursorRight();
   }
 
   moveCursorRight() {
     let newPos = this.cursor.y + (this.moves == 0 ? 1 : this.moves);
-    if (newPos > this.width - 1) {
-      newPos = this.width - 1;
+    if (newPos > this.rows - 1) {
+      newPos = this.rows - 1;
     }
 
     this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
@@ -76,8 +76,8 @@ export class DrawingBoard {
 
   moveCursorDown() {
     let newPos = this.cursor.x + (this.moves == 0 ? 1 : this.moves);
-    if (newPos > this.height - 1) {
-      newPos = this.height - 1;
+    if (newPos > this.columns - 1) {
+      newPos = this.columns - 1;
     }
 
     this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
@@ -105,7 +105,7 @@ export class DrawingBoard {
   }
 
   visualMaskReset() {
-    this.visualMask = Array(this.height).fill(0).map(() => Array(this.width).fill(CLEAR_COLOR));
+    this.visualMask = Array(this.columns).fill(0).map(() => Array(this.rows).fill(CLEAR_COLOR));
   }
 
   fillVisualMask(endX: number, endY: number) {
@@ -115,7 +115,7 @@ export class DrawingBoard {
     if (this.cursor.inVisualBlockMode()) {
       this.fillArea(startX, endX, startY, endY, VISUAL_COLOR, this.visualMask);
     } else if (this.cursor.inVisualLineMode()) {
-      this.fillArea(startX, endX, 0, this.width - 1, VISUAL_COLOR, this.visualMask);
+      this.fillArea(startX, endX, 0, this.rows - 1, VISUAL_COLOR, this.visualMask);
     } else {
       this.fillVisualNormalMode(startX, endX, startY, endY);
     }
@@ -125,14 +125,14 @@ export class DrawingBoard {
     const startRow = Math.min(startX, endX);
     const endRow = Math.max(startX, endX);
     for (let i = startRow + 1; i < endRow; ++i) {
-      this.fillArea(i, i, 0, this.width - 1, VISUAL_COLOR, this.visualMask);
+      this.fillArea(i, i, 0, this.rows - 1, VISUAL_COLOR, this.visualMask);
     }
 
     if (startX > endX) {
       this.fillArea(startX, startX, 0, startY, VISUAL_COLOR, this.visualMask);
-      this.fillArea(endX, endX, endY, this.width - 1, VISUAL_COLOR, this.visualMask);
+      this.fillArea(endX, endX, endY, this.rows - 1, VISUAL_COLOR, this.visualMask);
     } else if (startX < endX) {
-      this.fillArea(startX, startX, startY, this.width - 1, VISUAL_COLOR, this.visualMask);
+      this.fillArea(startX, startX, startY, this.rows - 1, VISUAL_COLOR, this.visualMask);
       this.fillArea(endX, endX, 0, endY, VISUAL_COLOR, this.visualMask);
     } else {
       this.fillArea(startX, endX, startY, endY, VISUAL_COLOR, this.visualMask);
@@ -205,13 +205,13 @@ export class DrawingBoard {
           this.board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR;
         }
       } break;
-      case "D": this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, this.width - 1); break;
+      case "D": this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, this.rows - 1); break;
       case "$": this.moveToRowEnd(); break;
       case "d": {
         if (this.cursor.inAnyVisualMode()) {
           this.deleteVisualMask()
         } else if (this.cursor.inDeleteMode()) {
-          this.deleteArea(this.cursor.x, this.cursor.x, 0, this.width - 1);
+          this.deleteArea(this.cursor.x, this.cursor.x, 0, this.rows - 1);
         } else {
           this.cursor.switchToDelete();
         }

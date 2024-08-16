@@ -14,10 +14,10 @@ boardCanvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_HEIGHT + STATUS_BAR_INF
 
 export default function draw(board: DrawingBoard) {
   boardCtx.reset();
-  const width = BOARD_WIDTH / board.width;
-  const height = BOARD_HEIGHT / board.height;
-  for (let i = 0; i < board.width; i++) {
-    for (let j = 0; j < board.height; j++) {
+  const width = BOARD_WIDTH / board.columns;
+  const height = BOARD_HEIGHT / board.rows;
+  for (let i = 0; i < board.rows; i++) {
+    for (let j = 0; j < board.columns; j++) {
       const x = j * width + NUMBER_PADDING;
       boardCtx.strokeRect(x, i * height, width, height);
       boardCtx.fillStyle = board.board[i][j];
@@ -35,9 +35,9 @@ export default function draw(board: DrawingBoard) {
 }
 
 function drawNumbers(board: DrawingBoard) {
-  const verticalNumbers = getNumbers(board.cursor.x, board.height);
-  const height = BOARD_HEIGHT / board.height;
-  const width = BOARD_WIDTH / board.width;
+  const verticalNumbers = getNumbers(board.cursor.x, board.rows);
+  const height = BOARD_HEIGHT / board.rows;
+  const width = BOARD_WIDTH / board.columns;
 
   for (let i = 0; i < verticalNumbers.length; i++) {
     const y = i * height + (NUMBER_PADDING / 2) - TEXT_PADDING;
@@ -51,7 +51,7 @@ function drawNumbers(board: DrawingBoard) {
     boardCtx.fillText(number.toString(), NUMBER_PADDING / 2, y);
   }
 
-  const horizontalNumbers = getNumbers(board.cursor.y, board.width);
+  const horizontalNumbers = getNumbers(board.cursor.y, board.columns);
   for (let i = 0; i < horizontalNumbers.length; i++) {
     const x = i * width + NUMBER_PADDING + NUMBER_PADDING / 4;
     boardCtx.fillStyle = "white";
