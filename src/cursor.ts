@@ -1,10 +1,10 @@
 export enum CursorMode {
-  Normal,
-  Insert,
-  Visual,
-  VisualLine,
-  VisualBlock,
-  Delete,
+  Normal = "-- NORMAL --",
+  Insert = "-- INSERT --",
+  Visual = "-- VISUAL --",
+  VisualLine = "-- VISUAL LINE --",
+  VisualBlock = "-- VISUAL BLOCK --",
+  Delete = "-- DELETE --",
 }
 
 export class Cursor {
@@ -69,7 +69,6 @@ export class Cursor {
   }
 
   getCursorLineInfo(): string {
-    const modes = ['-- NORMAL --', '-- INSERT --', '-- VISUAL --', '-- VISUAL LINE --', '-- VISUAL BLOCK --']
-    return modes[this.mode];
+    return this.mode;
   }
 }
