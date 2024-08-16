@@ -22,7 +22,7 @@ export function renderBoard(board: DrawingBoard) {
     for (let j = 0; j < board.columns; j++) {
       const x = j * width + NUMBER_PADDING;
       boardCtx.strokeRect(x, i * height, width, height);
-      boardCtx.fillStyle = board.board[i][j];
+      boardCtx.fillStyle = board.getCurrentBoard()[i][j];
       boardCtx.fillRect(x, i * height, width, height);
       boardCtx.fillStyle = board.visualMask[i][j];
       boardCtx.fillRect(x, i * height, width, height);

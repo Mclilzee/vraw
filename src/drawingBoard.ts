@@ -8,17 +8,32 @@ export class DrawingBoard {
   cursor = new Cursor();
   rows: number;
   columns: number;
-  board: string[][];
   moves = 1;
   drawingColor = "red";
   visualMask: string[][];
   controlHeld = false;
+  historyIndex = 0;
+  history: string[][][] = [[]];
 
   constructor(height: number, width: number) {
-    this.board = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
+    this.history[0] = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
     this.rows = height;
     this.columns = width;
     this.visualMask = Array(height).fill(0).map(() => Array(width).fill(CLEAR_COLOR));
+  }
+
+  getCurrentBoard(): string[][] {
+    const array: string[][] = [];
+    const board = this.history[this.historyIndex];
+
+    for (let i = 0; i < board.length; i++) {
+      array[i] = [];
+      for (let j = 0; j < board[i].length; j++) {
+        array[i][j] = board[i][j];
+      }
+    }
+
+    return array;
   }
 
   cursorColor(): string {
@@ -42,6 +57,10 @@ export class DrawingBoard {
   }
 
   moveCursorRight() {
+    if (this.cursor.y === this.columns - 1) {
+      return;
+    }
+
     let newPos = this.cursor.y + (this.moves == 0 ? 1 : this.moves);
     if (newPos > this.rows - 1) {
       newPos = this.rows - 1;
@@ -96,11 +115,17 @@ export class DrawingBoard {
   }
 
   drawBoard(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-    this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor, this.board);
+    const board = this.getCurrentBoard();
+    this.history.push(board);
+    this.historyIndex++;
+    this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor, board);
   }
 
   deleteArea(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-    this.fillArea(xStart, xEnd, yStart, yEnd, CELL_DEFAULT_COLOR, this.board);
+    const board = this.getCurrentBoard();
+    this.history.push(board);
+    this.historyIndex++;
+    this.fillArea(xStart, xEnd, yStart, yEnd, CELL_DEFAULT_COLOR, board);
     this.cursor.switchToNormal();
   }
 
@@ -142,7 +167,8 @@ export class DrawingBoard {
   drawVisualMask() {
     this.visualMask.forEach((row, i) => row.forEach((color, j) => {
       if (color === VISUAL_COLOR) {
-        this.board[i][j] = this.drawingColor;
+        const board = this.getCurrentBoard();
+        board[i][j] = this.drawingColor;
       }
     }));
     this.visualMaskReset();
@@ -152,7 +178,8 @@ export class DrawingBoard {
   deleteVisualMask() {
     this.visualMask.forEach((row, i) => row.forEach((color, j) => {
       if (color === VISUAL_COLOR) {
-        this.board[i][j] = CELL_DEFAULT_COLOR;
+        const board = this.getCurrentBoard();
+        board[i][j] = CELL_DEFAULT_COLOR;
       }
     }));
     this.visualMaskReset();
@@ -169,8 +196,8 @@ export class DrawingBoard {
         array[i][j] = color;
       }
     }
-  }
 
+  }
 
   handleInput(input: string) {
     if (input == "0" && this.moves == 0) {
@@ -202,7 +229,9 @@ export class DrawingBoard {
         if (this.cursor.inAnyVisualMode()) {
           this.deleteVisualMask()
         } else {
-          this.board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR;
+          const board = this.getCurrentBoard();
+          this.historyIndex = this.history.push(board) - 1;
+          board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR;
         }
       } break;
       case "D": this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, this.rows - 1); break;
@@ -235,6 +264,9 @@ export class DrawingBoard {
           this.cursor.switchToVisual();
           this.fillVisualMask(this.cursor.x, this.cursor.y);
         }
+      } break;
+        case "u": {
+        this.historyIndex = Math.max(this.historyIndex - 1, 0);
       } break;
     }
   }
