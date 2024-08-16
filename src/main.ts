@@ -1,5 +1,5 @@
 import './style.css'
-import { canvas, ctx } from './elements';
+import { boardCanvas, boardCtx } from './elements';
 import { DrawingBoard } from './drawingBoard';
 
 const TILE_SIZE = 40;
@@ -12,8 +12,8 @@ const TEXT_PADDING = 3;
 const STATUS_BAR_INFO_HEIGHT = 20;
 
 const drawingBoard = new DrawingBoard(TILE_SIZE, TILE_SIZE);
-canvas.width = BOARD_WIDTH + NUMBER_PADDING * 2;
-canvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_HEIGHT + STATUS_BAR_INFO_HEIGHT;
+boardCanvas.width = BOARD_WIDTH + NUMBER_PADDING * 2;
+boardCanvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_HEIGHT + STATUS_BAR_INFO_HEIGHT;
 
 draw(drawingBoard);
 addEventListener("keydown", (e) => {
@@ -32,22 +32,22 @@ addEventListener("keyup", (e) => {
 });
 
 function draw(board: DrawingBoard) {
-  ctx.reset();
+  boardCtx.reset();
   const width = BOARD_WIDTH / board.width;
   const height = BOARD_HEIGHT / board.height;
   for (let i = 0; i < board.width; i++) {
     for (let j = 0; j < board.height; j++) {
       const x = j * width + NUMBER_PADDING;
-      ctx.strokeRect(x, i * height, width, height);
-      ctx.fillStyle = board.board[i][j];
-      ctx.fillRect(x, i * height, width, height);
-      ctx.fillStyle = board.visualMask[i][j];
-      ctx.fillRect(x, i * height, width, height);
+      boardCtx.strokeRect(x, i * height, width, height);
+      boardCtx.fillStyle = board.board[i][j];
+      boardCtx.fillRect(x, i * height, width, height);
+      boardCtx.fillStyle = board.visualMask[i][j];
+      boardCtx.fillRect(x, i * height, width, height);
     }
   }
 
-  ctx.fillStyle = board.cursorColor();
-  ctx.fillRect(board.cursor.y * width + NUMBER_PADDING, board.cursor.x * height, width, height);
+  boardCtx.fillStyle = board.cursorColor();
+  boardCtx.fillRect(board.cursor.y * width + NUMBER_PADDING, board.cursor.x * height, width, height);
   drawNumbers(board);
   drawStatusBar(board.cursor.x + 1, board.cursor.y + 1);
   drawStatusBarInfo(board);
@@ -60,27 +60,27 @@ function drawNumbers(board: DrawingBoard) {
 
   for (let i = 0; i < verticalNumbers.length; i++) {
     const y = i * height + (NUMBER_PADDING / 2) - TEXT_PADDING;
-    ctx.fillStyle = "white";
-    ctx.font = "12px Fira Sans";
-    ctx.textAlign = "center";
+    boardCtx.fillStyle = "white";
+    boardCtx.font = "12px Fira Sans";
+    boardCtx.textAlign = "center";
     const number = verticalNumbers[i];
     if (number === 0) {
-      ctx.fillStyle = "red";
+      boardCtx.fillStyle = "red";
     }
-    ctx.fillText(number.toString(), NUMBER_PADDING / 2, y);
+    boardCtx.fillText(number.toString(), NUMBER_PADDING / 2, y);
   }
 
   const horizontalNumbers = getNumbers(board.cursor.y, board.width);
   for (let i = 0; i < horizontalNumbers.length; i++) {
     const x = i * width + NUMBER_PADDING + NUMBER_PADDING / 4;
-    ctx.fillStyle = "white";
-    ctx.font = "10px Fira Sans";
-    ctx.textAlign = "center";
+    boardCtx.fillStyle = "white";
+    boardCtx.font = "10px Fira Sans";
+    boardCtx.textAlign = "center";
     const number = horizontalNumbers[i];
     if (number === 0) {
-      ctx.fillStyle = "red";
+      boardCtx.fillStyle = "red";
     }
-    ctx.fillText(number.toString(), x, BOARD_WIDTH + NUMBER_PADDING / 2);
+    boardCtx.fillText(number.toString(), x, BOARD_WIDTH + NUMBER_PADDING / 2);
   }
 }
 
@@ -95,14 +95,14 @@ function getNumbers(anchor: number, size: number) {
 
 function drawStatusBar(cursorRow: number, cursorColumn: number) {
   const y = BOARD_WIDTH + NUMBER_PADDING;
-  ctx.fillStyle = "grey";
-  ctx.fillRect(0, y, canvas.width, BAR_HEIGHT);
-  ctx.fillStyle = "white";
-  ctx.font = "bold 11px Fira Sans";
-  ctx.textAlign = "left";
-  ctx.fillText("vim/drawing.ts", TEXT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
+  boardCtx.fillStyle = "grey";
+  boardCtx.fillRect(0, y, boardCanvas.width, BAR_HEIGHT);
+  boardCtx.fillStyle = "white";
+  boardCtx.font = "bold 11px Fira Sans";
+  boardCtx.textAlign = "left";
+  boardCtx.fillText("vim/drawing.ts", TEXT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
 
-  ctx.fillText(`${cursorRow}, ${cursorColumn}`, BOARD_WIDTH - CURSOR_POSITION_RIGHT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
+  boardCtx.fillText(`${cursorRow}, ${cursorColumn}`, BOARD_WIDTH - CURSOR_POSITION_RIGHT_PADDING, y + BAR_HEIGHT / 2 + TEXT_PADDING);
 }
 
 function drawStatusBarInfo(board: DrawingBoard) {
@@ -117,6 +117,6 @@ function drawStatusBarInfo(board: DrawingBoard) {
     mode = "VISUAL BLOCK";
   }
 
-  ctx.font = "15px Fira Sans";
-  ctx.fillText(`-- ${mode} --`, TEXT_PADDING, canvas.height, canvas.width);
+  boardCtx.font = "15px Fira Sans";
+  boardCtx.fillText(`-- ${mode} --`, TEXT_PADDING, boardCanvas.height, boardCanvas.width);
 }
