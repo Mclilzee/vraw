@@ -15,6 +15,7 @@ const drawingBoard = new DrawingBoard(ROWS, COLUMNS);
 renderBoard(drawingBoard);
 renderStatusInfo(drawingBoard);
 addEventListener("keydown", (e) => {
+  e.preventDefault();
   if (currentEngine === Engine.Input) {
     if (e.key == "Control") {
       drawingBoard.controlHeld = true;

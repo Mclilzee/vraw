@@ -272,7 +272,7 @@ export class DrawingBoard {
       } break;
         case "r": {
         if (this.controlHeld) {
-          this.historyIndex = Math.min(this.history.length, this.historyIndex + 1);
+          this.historyIndex = Math.min(this.history.length - 1, this.historyIndex + 1);
         }
       } break;
     }
