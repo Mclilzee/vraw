@@ -1,4 +1,4 @@
-const canvas = document.querySelector("#canvas") as HTMLCanvasElement;
+const canvas = document.querySelector("#board-canvas") as HTMLCanvasElement;
 if (canvas == null) {
     throw Error("Canvas were not found");
 }
