@@ -1,6 +1,6 @@
 import './style.css'
 import { DrawingBoard } from './drawingBoard';
-import render from "./drawing";
+import render from "./render";
 
 const ROWS = 40;
 const COLUMNS = 40;
