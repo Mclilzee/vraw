@@ -3,7 +3,7 @@ import { Board as Board } from './board';
 import { renderBoard, renderStatusInfo } from "./render";
 import handleNormalInput from './normalInputHandler';
 
-export enum InputMode {
+enum InputMode {
   Normal,
   Command
 }
