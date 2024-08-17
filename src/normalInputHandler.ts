@@ -1,14 +1,14 @@
 import { board, CELL_DEFAULT_COLOR } from "./main";
 import { renderBoard, renderStatusInfo } from "./render";
-let moves = 1;
+let moves = 0;
 
 export default function handleInput(e: KeyboardEvent) {
-  if (e.key == "0" && moves == 1) {
+  if (e.key == "0" && moves == 0) {
     board.moveToRowStart();
   } else {
     const num = parseInt(e.key);
     if (!isNaN(num)) {
-      moves = moves == 0 ? num : moves * 10 + num;
+      moves = moves * 10 + num;
     }
   }
 
@@ -25,20 +25,24 @@ export default function handleInput(e: KeyboardEvent) {
       board.cursor.switchToNormal();
     } break;
     case "l": {
+      moves = moves === 0 ? 1 : moves;
       board.moveCursorRight(moves);
-      moves = 1;
+      moves = 0;
     } break;
     case "h": {
+      moves = moves === 0 ? 1 : moves;
       board.moveCursorLeft(moves);
-      moves = 1;
+      moves = 0;
     } break;
     case "k": {
+      moves = moves === 0 ? 1 : moves;
       board.moveCursorUp(moves);
-      moves = 1;
+      moves = 0;
     } break;
     case "j": {
+      moves = moves === 0 ? 1 : moves;
       board.moveCursorDown(moves);
-      moves = 1;
+      moves = 0;
     } break;
     case "x": {
       if (board.cursor.inAnyVisualMode()) {
