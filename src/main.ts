@@ -1,5 +1,5 @@
 import './style.css'
-import { Board as Board } from './drawingBoard';
+import { Board as Board } from './board';
 import { renderBoard, renderStatusInfo } from "./render";
 import handleNormalInput from './normalInputHandler';
 

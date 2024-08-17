@@ -1,4 +1,4 @@
-import { Board } from './drawingBoard';
+import { Board } from './board';
 import { boardCanvas, boardCtx, statusInfo, statusInfoCtx } from './elements';
 
 const BOARD_WIDTH = 600;
