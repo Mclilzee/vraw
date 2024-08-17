@@ -7,12 +7,13 @@ const CLEAR_COLOR = "#00000000";
 export class Board {
   rows: number;
   columns: number;
+  cursor = new Cursor();
   drawingColor = "red";
   visualMask: string[][];
   historyIndex = 0;
   history: string[][][] = [[]];
 
-  constructor(rows: number, columns: number) {
+  constructor(columns: number, rows: number) {
     this.history[0] = Array(columns).fill(0).map(() => Array(rows).fill(CELL_DEFAULT_COLOR));
     this.rows = columns;
     this.columns = rows;
@@ -52,55 +53,39 @@ export class Board {
   }
 
   moveToRowStart() {
-    this.moves = this.cursor.y;
-    this.moveCursorLeft();
+    const moves = this.cursor.y;
+    this.moveCursorLeft(moves);
   }
 
   moveToRowEnd() {
-    this.moves = this.rows - 1 - this.cursor.y;
-    this.moveCursorRight();
+    const moves = this.rows - 1 - this.cursor.y;
+    this.moveCursorRight(moves);
   }
 
-  moveCursorRight() {
-    if (this.cursor.y === this.columns - 1) {
-      return;
+  moveCursorRight(moves: number) {
+    if (this.cursor.y < this.columns - 1) {
+      const newPos = Math.max(this.cursor.y + moves, this.rows - 1);
+      this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
+      this.cursor.y = newPos;
     }
+  }
 
-    let newPos = this.cursor.y + (this.moves == 0 ? 1 : this.moves);
-    if (newPos > this.rows - 1) {
-      newPos = this.rows - 1;
-    }
-
+  moveCursorLeft(moves: number) {
+    const newPos = Math.min(0, this.cursor.y - moves);
     this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
     this.cursor.y = newPos;
-    this.moves = 0;
   }
 
-  moveCursorLeft() {
-    let newPos = this.cursor.y - (this.moves == 0 ? 1 : this.moves);
-    if (newPos < 0) {
-      newPos = 0;
-    }
-
-    this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
-    this.cursor.y = newPos;
-    this.moves = 0;
-  }
-
-  moveCursorUp(moves: number, cursor: Cursor) {
-    let newPos = cursor.x - (this.moves == 0 ? 1 : this.moves);
-    if (newPos < 0) {
-      newPos = 0;
-    }
-
+  moveCursorUp(moves: number) {
+    const newPos = Math.min(0, this.cursor.x - moves);
     this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
     this.cursor.x = newPos;
   }
 
-  moveCursorDown(moves: number, cursor: Cursor) {
-    const newPos = Math.max(cursor.x + moves, this.columns);
-    this.handleBoardChanges(cursor.x, newPos, cursor.y, cursor.y);
-    cursor.x = newPos;
+  moveCursorDown(moves: number) {
+    const newPos = Math.max(this.cursor.x + moves, this.columns);
+    this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
+    this.cursor.x = newPos;
   }
 
   handleBoardChanges(cursorOldX: number, cursorNewX: number, cursorOldY: number, cursorNewY: number) {
@@ -192,5 +177,4 @@ export class Board {
       }
     }
   }
-
 }
