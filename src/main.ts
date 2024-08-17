@@ -1,35 +1,26 @@
 import './style.css'
 import { DrawingBoard } from './drawingBoard';
 import { renderBoard, renderStatusInfo } from "./render";
+import handleNormalInput from './normalInputHandler';
 
-enum Engine {
-  Input,
+export enum InputMode {
+  Normal,
   Command
 }
 
-const currentEngine = Engine.Input;
+const currentInputMode = InputMode.Normal;
 const ROWS = 40;
 const COLUMNS = 40;
-const drawingBoard = new DrawingBoard(ROWS, COLUMNS);
+const board = new DrawingBoard(ROWS, COLUMNS);
+const cursor = board.cursor;
 
-renderBoard(drawingBoard);
-renderStatusInfo(drawingBoard.cursor.getCursorLineInfo(), "orange");
-addEventListener("keydown", (e) => {
+document.addEventListener("keydown", (e) => {
   e.preventDefault();
-  if (currentEngine === Engine.Input) {
-    if (e.key == "Control") {
-      drawingBoard.controlHeld = true;
-    } else {
-      drawingBoard.handleInput(e.key);
-      renderBoard(drawingBoard);
-      renderStatusInfo(drawingBoard.cursor.getCursorLineInfo(), "orange");
-    }
-  }
-
-});
-
-addEventListener("keyup", (e) => {
-  if (e.key == "Control") {
-    drawingBoard.controlHeld = false;
+  if (currentInputMode === InputMode.Normal) {
+    handleNormalInput(e);
   }
 });
+
+renderBoard(board);
+renderStatusInfo(cursor.getCursorLineInfo(), "orange");
+export { board, cursor }
