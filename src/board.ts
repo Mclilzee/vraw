@@ -1,5 +1,10 @@
 import { Cursor } from "./cursor";
-import { CELL_DEFAULT_COLOR, CLEAR_COLOR, NORMAL_COLOR, VISUAL_COLOR } from "./main";
+
+const CELL_DEFAULT_COLOR = "#a5a5a5";
+const NORMAL_COLOR = "#00000080";
+const VISUAL_COLOR = "#0000F080";
+const CLEAR_COLOR = "#00000000";
+
 export class Board {
   rows: number;
   columns: number;
@@ -47,12 +52,12 @@ export class Board {
     }
   }
 
-  moveToRowStart() {
+  moveCursorToRowStart() {
     const moves = this.cursor.y;
     this.moveCursorLeft(moves);
   }
 
-  moveToRowEnd() {
+  moveCursorToRowEnd() {
     const moves = this.rows - 1 - this.cursor.y;
     this.moveCursorRight(moves);
   }
@@ -83,19 +88,24 @@ export class Board {
     this.cursor.x = newPos;
   }
 
-  handleBoardChanges(cursorOldX: number, cursorNewX: number, cursorOldY: number, cursorNewY: number) {
+  private handleBoardChanges(cursorOldX: number, cursorNewX: number, cursorOldY: number, cursorNewY: number) {
     if (this.cursor.inInsertMode()) {
       this.drawBoard(cursorOldX, cursorNewX, cursorOldY, cursorNewY);
     } else if (this.cursor.inAnyVisualMode()) {
       this.fillVisualMask(cursorNewX, cursorNewY);
-    } else if (this.cursor.inDeleteMode()) {
+    } else if (this.cursor.inNormalMode()) {//this.cursor.inDeleteMode()) {
       this.deleteArea(cursorOldX, cursorNewX, cursorOldY, cursorNewY);
     }
   }
 
-  drawBoard(xStart: number, xEnd: number, yStart: number, yEnd: number) {
+  private drawBoard(xStart: number, xEnd: number, yStart: number, yEnd: number) {
     const board = this.getCurrentBoardAndUpdateHistory();
     this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor, board);
+  }
+
+  deleteCell() {
+    const board = this.getCurrentBoardAndUpdateHistory();
+    board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR;
   }
 
   deleteArea(xStart: number, xEnd: number, yStart: number, yEnd: number) {
@@ -121,7 +131,7 @@ export class Board {
     }
   }
 
-  fillVisualNormalMode(startX: number, endX: number, startY: number, endY: number) {
+  private fillVisualNormalMode(startX: number, endX: number, startY: number, endY: number) {
     const startRow = Math.min(startX, endX);
     const endRow = Math.max(startX, endX);
     for (let i = startRow + 1; i < endRow; ++i) {
@@ -161,7 +171,7 @@ export class Board {
     this.cursor.switchToNormal();
   }
 
-  fillArea(xStart: number, xEnd: number, yStart: number, yEnd: number, color: string, array: string[][]) {
+  private fillArea(xStart: number, xEnd: number, yStart: number, yEnd: number, color: string, array: string[][]) {
     const iStart = Math.min(xStart, xEnd);
     const iEnd = Math.max(xStart, xEnd);
     const jStart = Math.min(yStart, yEnd);

@@ -1,10 +1,10 @@
-import { board, CELL_DEFAULT_COLOR } from "./main";
+import { board } from "./main";
 import { renderBoard, renderStatusInfo } from "./render";
 let moves = 0;
 
 export default function handleInput(e: KeyboardEvent) {
-  if (e.key == "0" && moves == 0) {
-    board.moveToRowStart();
+  if (e.key === "0" && moves === 0) {
+    board.moveCursorToRowStart();
   } else {
     const num = parseInt(e.key);
     if (!isNaN(num)) {
@@ -13,17 +13,8 @@ export default function handleInput(e: KeyboardEvent) {
   }
 
   switch (e.key) {
-    case "i": {
-      if (board.cursor.inAnyVisualMode()) {
-        board.drawVisualMask();
-      } else {
-        board.cursor.switchToInsert();
-      }
-    } break;
-    case "Escape": {
-      board.visualMaskReset();
-      board.cursor.switchToNormal();
-    } break;
+    case "i": switchCursorToInsert(); break;
+    case "Escape": switchCursorToNormal(); break;
     case "l": {
       moves = moves === 0 ? 1 : moves;
       board.moveCursorRight(moves);
@@ -44,44 +35,17 @@ export default function handleInput(e: KeyboardEvent) {
       board.moveCursorDown(moves);
       moves = 0;
     } break;
-    case "x": {
-      if (board.cursor.inAnyVisualMode()) {
-        board.deleteVisualMask()
-      } else {
-        const boardArray = board.getCurrentBoardAndUpdateHistory();
-        boardArray[board.cursor.x][board.cursor.y] = CELL_DEFAULT_COLOR;
-      }
-    } break;
-    case "D": board.deleteArea(board.cursor.x, board.cursor.x, board.cursor.y, board.rows - 1); break;
-    case "$": board.moveToRowEnd(); break;
-    case "d": {
-      if (board.cursor.inAnyVisualMode()) {
-        board.deleteVisualMask()
-      } else if (board.cursor.inDeleteMode()) {
-        board.deleteArea(board.cursor.x, board.cursor.x, 0, board.rows - 1);
-      } else {
-        board.cursor.switchToDelete();
-      }
-    } break;
-    case "V": {
-      if (board.cursor.inAnyVisualMode()) {
-        board.visualMaskReset();
-        board.cursor.switchToNormal();
-      } else {
-        board.cursor.switchToVisualLine();
-        board.fillVisualMask(board.cursor.x, board.cursor.y);
-      }
-    } break;
+    case "$": board.moveCursorToRowEnd(); break;
+    case "x": handleDeleteCell(); break;
+    case "D": handleDeleteFromCursorToRowEnd(); break;
+    case "d": handleDeleteRow(); break;
+    case "V": handleVisualLineMode(); break;
     case "v": {
-      if (board.cursor.inAnyVisualMode()) {
-        board.visualMaskReset();
-        board.cursor.switchToNormal();
-      } else if (e.ctrlKey) {
-        board.cursor.switchToVisualBlock();
+      if (e.ctrlKey) {
+        handleVisualBlockMode()
       } else {
-        board.cursor.switchToVisual();
-        board.fillVisualMask(board.cursor.x, board.cursor.y);
-      }
+        handleVisualMode()
+      };
     } break;
     case "u": {
       board.historyIndex = Math.max(board.historyIndex - 1, 0);
@@ -95,4 +59,67 @@ export default function handleInput(e: KeyboardEvent) {
 
   renderBoard(board);
   renderStatusInfo(board.cursor.getCursorLineInfo(), "orange");
+}
+
+
+function switchCursorToInsert() {
+  if (board.cursor.inAnyVisualMode()) {
+    board.drawVisualMask();
+  } else {
+    board.cursor.switchToInsert();
+  }
+}
+
+function switchCursorToNormal() {
+  board.visualMaskReset();
+  board.cursor.switchToNormal();
+}
+
+function handleVisualLineMode() {
+  if (board.cursor.inAnyVisualMode()) {
+    board.visualMaskReset();
+    board.cursor.switchToNormal();
+  } else {
+    board.cursor.switchToVisualLine();
+    board.fillVisualMask(board.cursor.x, board.cursor.y);
+  }
+}
+
+function handleVisualBlockMode() {
+  if (board.cursor.inAnyVisualMode()) {
+    board.visualMaskReset();
+    board.cursor.switchToNormal();
+  } else {
+    board.cursor.switchToVisualBlock();
+  }
+}
+
+function handleVisualMode() {
+  if (board.cursor.inAnyVisualMode()) {
+    board.visualMaskReset();
+    board.cursor.switchToNormal();
+  } else {
+    board.cursor.switchToVisual();
+    board.fillVisualMask(board.cursor.x, board.cursor.y);
+  }
+}
+
+function handleDeleteFromCursorToRowEnd() {
+  board.deleteArea(board.cursor.x, board.cursor.x, board.cursor.y, board.rows - 1)
+}
+
+function handleDeleteRow() {
+  if (board.cursor.inAnyVisualMode()) {
+    board.deleteVisualMask()
+  } else {
+    board.deleteArea(board.cursor.x, board.cursor.x, 0, board.rows - 1);
+  }
+}
+
+function handleDeleteCell() {
+  if (board.cursor.inAnyVisualMode()) {
+    board.deleteVisualMask()
+  } else {
+    board.deleteCell();
+  }
 }
