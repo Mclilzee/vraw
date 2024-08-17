@@ -1,7 +1,7 @@
 export class HistoryRecord {
-  readonly board: string[][];
-  readonly cursorX: number;
-  readonly cursorY: number;
+  board: string[][];
+  cursorX: number;
+  cursorY: number;
 
   constructor(board: string[][], cursorX: number, cursorY: number) {
     this.board = board;

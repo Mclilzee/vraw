@@ -65,6 +65,7 @@ export class Board {
       const newPos = Math.min(this.cursor.y + moves, this.rows - 1);
       this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
       this.cursor.y = newPos;
+      this.history.currentRecord().cursorY = newPos;
     }
   }
 
@@ -72,18 +73,21 @@ export class Board {
     const newPos = Math.max(0, this.cursor.y - moves);
     this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
     this.cursor.y = newPos;
+    this.history.currentRecord().cursorY = newPos;
   }
 
   moveCursorUp(moves: number) {
     const newPos = Math.max(0, this.cursor.x - moves);
     this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
     this.cursor.x = newPos;
+    this.history.currentRecord().cursorX = newPos;
   }
 
   moveCursorDown(moves: number) {
     const newPos = Math.min(this.cursor.x + moves, this.columns);
     this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
     this.cursor.x = newPos;
+    this.history.currentRecord().cursorX = newPos;
   }
 
   private handleBoardChanges(cursorOldX: number, cursorNewX: number, cursorOldY: number, cursorNewY: number) {
