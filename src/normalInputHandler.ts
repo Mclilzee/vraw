@@ -1,82 +1,94 @@
-import { board, cursor } from "./main";
+import { board, CELL_DEFAULT_COLOR } from "./main";
 import { renderBoard, renderStatusInfo } from "./render";
 let moves = 1;
 
 export default function handleInput(e: KeyboardEvent) {
-  if (e.key == "0" && this.moves == 0) {
-    this.moveToRowStart();
+  if (e.key == "0" && moves == 1) {
+    board.moveToRowStart();
   } else {
-    const num = parseInt(input);
+    const num = parseInt(e.key);
     if (!isNaN(num)) {
-      this.moves = this.moves == 0 ? num : this.moves * 10 + num;
+      moves = moves == 0 ? num : moves * 10 + num;
     }
   }
 
-  switch (input) {
+  switch (e.key) {
     case "i": {
-      if (this.cursor.inAnyVisualMode()) {
-        this.drawVisualMask();
+      if (board.cursor.inAnyVisualMode()) {
+        board.drawVisualMask();
       } else {
-        this.cursor.switchToInsert();
+        board.cursor.switchToInsert();
       }
     } break;
     case "Escape": {
-      this.visualMaskReset();
-      this.cursor.switchToNormal();
+      board.visualMaskReset();
+      board.cursor.switchToNormal();
     } break;
-    case "l": this.moveCursorRight(); break;
-    case "h": this.moveCursorLeft(); break;
-    case "k": this.moveCursorUp(); break;
-    case "j": this.moveCursorDown(); break;
+    case "l": {
+      board.moveCursorRight(moves);
+      moves = 1;
+    } break;
+    case "h": {
+      board.moveCursorLeft(moves);
+      moves = 1;
+    } break;
+    case "k": {
+      board.moveCursorUp(moves);
+      moves = 1;
+    } break;
+    case "j": {
+      board.moveCursorDown(moves);
+      moves = 1;
+    } break;
     case "x": {
-      if (this.cursor.inAnyVisualMode()) {
-        this.deleteVisualMask()
+      if (board.cursor.inAnyVisualMode()) {
+        board.deleteVisualMask()
       } else {
-        const board = this.getCurrentBoardAndUpdateHistory();
-        board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR;
+        const boardArray = board.getCurrentBoardAndUpdateHistory();
+        boardArray[board.cursor.x][board.cursor.y] = CELL_DEFAULT_COLOR;
       }
     } break;
-    case "D": this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, this.rows - 1); break;
-    case "$": this.moveToRowEnd(); break;
+    case "D": board.deleteArea(board.cursor.x, board.cursor.x, board.cursor.y, board.rows - 1); break;
+    case "$": board.moveToRowEnd(); break;
     case "d": {
-      if (this.cursor.inAnyVisualMode()) {
-        this.deleteVisualMask()
-      } else if (this.cursor.inDeleteMode()) {
-        this.deleteArea(this.cursor.x, this.cursor.x, 0, this.rows - 1);
+      if (board.cursor.inAnyVisualMode()) {
+        board.deleteVisualMask()
+      } else if (board.cursor.inDeleteMode()) {
+        board.deleteArea(board.cursor.x, board.cursor.x, 0, board.rows - 1);
       } else {
-        this.cursor.switchToDelete();
+        board.cursor.switchToDelete();
       }
     } break;
     case "V": {
-      if (this.cursor.inAnyVisualMode()) {
-        this.visualMaskReset();
-        this.cursor.switchToNormal();
+      if (board.cursor.inAnyVisualMode()) {
+        board.visualMaskReset();
+        board.cursor.switchToNormal();
       } else {
-        this.cursor.switchToVisualLine();
-        this.fillVisualMask(this.cursor.x, this.cursor.y);
+        board.cursor.switchToVisualLine();
+        board.fillVisualMask(board.cursor.x, board.cursor.y);
       }
     } break;
     case "v": {
-      if (this.cursor.inAnyVisualMode()) {
-        this.visualMaskReset();
-        this.cursor.switchToNormal();
-      } else if (this.controlHeld) {
-        this.cursor.switchToVisualBlock();
+      if (board.cursor.inAnyVisualMode()) {
+        board.visualMaskReset();
+        board.cursor.switchToNormal();
+      } else if (e.ctrlKey) {
+        board.cursor.switchToVisualBlock();
       } else {
-        this.cursor.switchToVisual();
-        this.fillVisualMask(this.cursor.x, this.cursor.y);
+        board.cursor.switchToVisual();
+        board.fillVisualMask(board.cursor.x, board.cursor.y);
       }
     } break;
     case "u": {
-      this.historyIndex = Math.max(this.historyIndex - 1, 0);
+      board.historyIndex = Math.max(board.historyIndex - 1, 0);
     } break;
     case "r": {
-      if (this.controlHeld) {
-        this.historyIndex = Math.min(this.history.length - 1, this.historyIndex + 1);
+      if (e.ctrlKey) {
+        board.historyIndex = Math.min(board.history.length - 1, board.historyIndex + 1);
       }
     } break;
   }
 
   renderBoard(board);
-  renderStatusInfo(cursor.getCursorLineInfo(), "orange");
+  renderStatusInfo(board.cursor.getCursorLineInfo(), "orange");
 }

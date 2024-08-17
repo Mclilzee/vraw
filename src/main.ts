@@ -2,7 +2,11 @@ import './style.css'
 import { Board as Board } from './drawingBoard';
 import { renderBoard, renderStatusInfo } from "./render";
 import handleNormalInput from './normalInputHandler';
-import { Cursor } from './cursor';
+
+const CELL_DEFAULT_COLOR = "#a5a5a5";
+const NORMAL_COLOR = "#00000080";
+const VISUAL_COLOR = "#0000F080";
+const CLEAR_COLOR = "#00000000";
 
 export enum InputMode {
   Normal,
@@ -13,7 +17,6 @@ const currentInputMode = InputMode.Normal;
 const ROWS = 40;
 const COLUMNS = 40;
 const board = new Board(ROWS, COLUMNS);
-const cursor = new Cursor();
 
 document.addEventListener("keydown", (e) => {
   e.preventDefault();
@@ -23,5 +26,5 @@ document.addEventListener("keydown", (e) => {
 });
 
 renderBoard(board);
-renderStatusInfo(cursor.getCursorLineInfo(), "orange");
-export { board, cursor }
+renderStatusInfo(board.cursor.getCursorLineInfo(), "orange");
+export { board, CELL_DEFAULT_COLOR, NORMAL_COLOR, VISUAL_COLOR, CLEAR_COLOR }

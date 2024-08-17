@@ -1,9 +1,5 @@
 import { Cursor } from "./cursor";
-const CELL_DEFAULT_COLOR = "#a5a5a5";
-const NORMAL_COLOR = "#00000080";
-const VISUAL_COLOR = "#0000F080";
-const CLEAR_COLOR = "#00000000";
-
+import { CELL_DEFAULT_COLOR, CLEAR_COLOR, NORMAL_COLOR, VISUAL_COLOR } from "./main";
 export class Board {
   rows: number;
   columns: number;
@@ -38,7 +34,6 @@ export class Board {
     const board = this.getCurrentBoard();
     this.history[++this.historyIndex] = board;
     this.history = this.history.slice(0, this.historyIndex + 1);
-    console.log(this.history);
     return board;
   }
 
@@ -64,26 +59,26 @@ export class Board {
 
   moveCursorRight(moves: number) {
     if (this.cursor.y < this.columns - 1) {
-      const newPos = Math.max(this.cursor.y + moves, this.rows - 1);
+      const newPos = Math.min(this.cursor.y + moves, this.rows - 1);
       this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
       this.cursor.y = newPos;
     }
   }
 
   moveCursorLeft(moves: number) {
-    const newPos = Math.min(0, this.cursor.y - moves);
+    const newPos = Math.max(0, this.cursor.y - moves);
     this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
     this.cursor.y = newPos;
   }
 
   moveCursorUp(moves: number) {
-    const newPos = Math.min(0, this.cursor.x - moves);
+    const newPos = Math.max(0, this.cursor.x - moves);
     this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
     this.cursor.x = newPos;
   }
 
   moveCursorDown(moves: number) {
-    const newPos = Math.max(this.cursor.x + moves, this.columns);
+    const newPos = Math.min(this.cursor.x + moves, this.columns);
     this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
     this.cursor.x = newPos;
   }
