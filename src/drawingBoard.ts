@@ -4,22 +4,19 @@ const NORMAL_COLOR = "#00000080";
 const VISUAL_COLOR = "#0000F080";
 const CLEAR_COLOR = "#00000000";
 
-export class DrawingBoard {
-  cursor = new Cursor();
+export class Board {
   rows: number;
   columns: number;
-  moves = 1;
   drawingColor = "red";
   visualMask: string[][];
-  controlHeld = false;
   historyIndex = 0;
   history: string[][][] = [[]];
 
-  constructor(height: number, width: number) {
-    this.history[0] = Array(height).fill(0).map(() => Array(width).fill(CELL_DEFAULT_COLOR));
-    this.rows = height;
-    this.columns = width;
-    this.visualMask = Array(height).fill(0).map(() => Array(width).fill(CLEAR_COLOR));
+  constructor(rows: number, columns: number) {
+    this.history[0] = Array(columns).fill(0).map(() => Array(rows).fill(CELL_DEFAULT_COLOR));
+    this.rows = columns;
+    this.columns = rows;
+    this.visualMask = Array(columns).fill(0).map(() => Array(rows).fill(CLEAR_COLOR));
   }
 
   getCurrentBoard(): string[][] {
@@ -90,26 +87,20 @@ export class DrawingBoard {
     this.moves = 0;
   }
 
-  moveCursorUp() {
-    let newPos = this.cursor.x - (this.moves == 0 ? 1 : this.moves);
+  moveCursorUp(moves: number, cursor: Cursor) {
+    let newPos = cursor.x - (this.moves == 0 ? 1 : this.moves);
     if (newPos < 0) {
       newPos = 0;
     }
 
     this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
     this.cursor.x = newPos;
-    this.moves = 0;
   }
 
-  moveCursorDown() {
-    let newPos = this.cursor.x + (this.moves == 0 ? 1 : this.moves);
-    if (newPos > this.columns - 1) {
-      newPos = this.columns - 1;
-    }
-
-    this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
-    this.cursor.x = newPos;
-    this.moves = 0;
+  moveCursorDown(moves: number, cursor: Cursor) {
+    const newPos = Math.max(cursor.x + moves, this.columns);
+    this.handleBoardChanges(cursor.x, newPos, cursor.y, cursor.y);
+    cursor.x = newPos;
   }
 
   handleBoardChanges(cursorOldX: number, cursorNewX: number, cursorOldY: number, cursorNewY: number) {
@@ -202,79 +193,4 @@ export class DrawingBoard {
     }
   }
 
-  handleInput(input: string) {
-    if (input == "0" && this.moves == 0) {
-      this.moveToRowStart();
-    } else {
-      const num = parseInt(input);
-      if (!isNaN(num)) {
-        this.moves = this.moves == 0 ? num : this.moves * 10 + num;
-      }
-    }
-
-    switch (input) {
-      case "i": {
-        if (this.cursor.inAnyVisualMode()) {
-          this.drawVisualMask();
-        } else {
-          this.cursor.switchToInsert();
-        }
-      } break;
-      case "Escape": {
-        this.visualMaskReset();
-        this.cursor.switchToNormal();
-      } break;
-      case "l": this.moveCursorRight(); break;
-      case "h": this.moveCursorLeft(); break;
-      case "k": this.moveCursorUp(); break;
-      case "j": this.moveCursorDown(); break;
-      case "x": {
-        if (this.cursor.inAnyVisualMode()) {
-          this.deleteVisualMask()
-        } else {
-          const board = this.getCurrentBoardAndUpdateHistory();
-          board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR;
-        }
-      } break;
-      case "D": this.deleteArea(this.cursor.x, this.cursor.x, this.cursor.y, this.rows - 1); break;
-      case "$": this.moveToRowEnd(); break;
-      case "d": {
-        if (this.cursor.inAnyVisualMode()) {
-          this.deleteVisualMask()
-        } else if (this.cursor.inDeleteMode()) {
-          this.deleteArea(this.cursor.x, this.cursor.x, 0, this.rows - 1);
-        } else {
-          this.cursor.switchToDelete();
-        }
-      } break;
-      case "V": {
-        if (this.cursor.inAnyVisualMode()) {
-          this.visualMaskReset();
-          this.cursor.switchToNormal();
-        } else {
-          this.cursor.switchToVisualLine();
-          this.fillVisualMask(this.cursor.x, this.cursor.y);
-        }
-      } break;
-      case "v": {
-        if (this.cursor.inAnyVisualMode()) {
-          this.visualMaskReset();
-          this.cursor.switchToNormal();
-        } else if (this.controlHeld) {
-          this.cursor.switchToVisualBlock();
-        } else {
-          this.cursor.switchToVisual();
-          this.fillVisualMask(this.cursor.x, this.cursor.y);
-        }
-      } break;
-        case "u": {
-        this.historyIndex = Math.max(this.historyIndex - 1, 0);
-      } break;
-        case "r": {
-        if (this.controlHeld) {
-          this.historyIndex = Math.min(this.history.length - 1, this.historyIndex + 1);
-        }
-      } break;
-    }
-  }
 }

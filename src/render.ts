@@ -1,4 +1,4 @@
-import { DrawingBoard } from './drawingBoard';
+import { Board } from './drawingBoard';
 import { boardCanvas, boardCtx, statusInfo, statusInfoCtx } from './elements';
 
 const BOARD_WIDTH = 600;
@@ -14,7 +14,7 @@ boardCanvas.height = BOARD_HEIGHT + NUMBER_PADDING + BAR_HEIGHT;
 statusInfo.width = boardCanvas.width;
 statusInfo.height = STATUS_BAR_INFO_HEIGHT;
 
-export function renderBoard(board: DrawingBoard) {
+export function renderBoard(board: Board) {
   boardCtx.reset();
   const currentBoard = board.getCurrentBoard();
   const width = BOARD_WIDTH / board.columns;
@@ -43,7 +43,7 @@ export function renderStatusInfo(info: string, color: string) {
   statusInfoCtx.fillText(info, TEXT_PADDING, STATUS_BAR_INFO_HEIGHT);
 }
 
-function renderBoardNumbers(board: DrawingBoard) {
+function renderBoardNumbers(board: Board) {
   const verticalNumbers = getNumbers(board.cursor.x, board.rows);
   const height = BOARD_HEIGHT / board.rows;
   const width = BOARD_WIDTH / board.columns;

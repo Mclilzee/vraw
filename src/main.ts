@@ -1,7 +1,8 @@
 import './style.css'
-import { DrawingBoard } from './drawingBoard';
+import { Board as Board } from './drawingBoard';
 import { renderBoard, renderStatusInfo } from "./render";
 import handleNormalInput from './normalInputHandler';
+import { Cursor } from './cursor';
 
 export enum InputMode {
   Normal,
@@ -11,8 +12,8 @@ export enum InputMode {
 const currentInputMode = InputMode.Normal;
 const ROWS = 40;
 const COLUMNS = 40;
-const board = new DrawingBoard(ROWS, COLUMNS);
-const cursor = board.cursor;
+const board = new Board(ROWS, COLUMNS);
+const cursor = new Cursor();
 
 document.addEventListener("keydown", (e) => {
   e.preventDefault();
