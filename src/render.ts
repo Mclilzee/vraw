@@ -16,7 +16,7 @@ statusInfo.height = STATUS_BAR_INFO_HEIGHT;
 
 export function renderBoard(board: Board) {
   boardCtx.reset();
-  const currentBoard = board.getCurrentBoard();
+  const currentBoard = board.currentBoard();
   const width = BOARD_WIDTH / board.columns;
   const height = BOARD_HEIGHT / board.rows;
   for (let i = 0; i < board.rows; i++) {

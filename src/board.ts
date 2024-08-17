@@ -1,4 +1,5 @@
 import { Cursor } from "./cursor";
+import History from "./history";
 
 const CELL_DEFAULT_COLOR = "#a5a5a5";
 const NORMAL_COLOR = "#00000080";
@@ -11,35 +12,32 @@ export class Board {
   cursor = new Cursor();
   drawingColor = "red";
   visualMask: string[][];
-  historyIndex = 0;
-  history: string[][][] = [[]];
+  private history: History;
 
   constructor(columns: number, rows: number) {
-    this.history[0] = Array(columns).fill(0).map(() => Array(rows).fill(CELL_DEFAULT_COLOR));
     this.rows = columns;
     this.columns = rows;
     this.visualMask = Array(columns).fill(0).map(() => Array(rows).fill(CLEAR_COLOR));
+    const historyInit = Array(columns).fill(0).map(() => Array(rows).fill(CELL_DEFAULT_COLOR));
+    this.history = new History(historyInit, this.cursor.x, this.cursor.y);
   }
 
-  getCurrentBoard(): string[][] {
-    const array: string[][] = [];
-    const board = this.history[this.historyIndex];
-
-    for (let i = 0; i < board.length; i++) {
-      array[i] = [];
-      for (let j = 0; j < board[i].length; j++) {
-        array[i][j] = board[i][j];
-      }
-    }
-
-    return array;
+  moveToPreviousState() {
+    const record = this.history.getPreviousState();
+    this.cursor.switchToNormal();
+    this.cursor.x = record.cursorX;
+    this.cursor.y = record.cursorY;
   }
 
-  getCurrentBoardAndUpdateHistory(): string[][] {
-    const board = this.getCurrentBoard();
-    this.history[++this.historyIndex] = board;
-    this.history = this.history.slice(0, this.historyIndex + 1);
-    return board;
+  moveToNextState() {
+    const record = this.history.getNextState();
+    this.cursor.switchToNormal();
+    this.cursor.x = record.cursorX;
+    this.cursor.y = record.cursorY;
+  }
+
+  currentBoard() {
+    return this.history.currentRecord().board;
   }
 
   cursorColor(): string {
@@ -99,18 +97,18 @@ export class Board {
   }
 
   private drawBoard(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-    const board = this.getCurrentBoardAndUpdateHistory();
-    this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor, board);
+    const record = this.history.newRecord();
+    this.fillArea(xStart, xEnd, yStart, yEnd, this.drawingColor, record.board);
   }
 
   deleteCell() {
-    const board = this.getCurrentBoardAndUpdateHistory();
-    board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR;
+    const record = this.history.newRecord();
+    record.board[this.cursor.x][this.cursor.y] = CELL_DEFAULT_COLOR;
   }
 
   deleteArea(xStart: number, xEnd: number, yStart: number, yEnd: number) {
-    const board = this.getCurrentBoardAndUpdateHistory();
-    this.fillArea(xStart, xEnd, yStart, yEnd, CELL_DEFAULT_COLOR, board);
+    const record = this.history.newRecord();
+    this.fillArea(xStart, xEnd, yStart, yEnd, CELL_DEFAULT_COLOR, record.board);
     this.cursor.switchToNormal();
   }
 
@@ -150,10 +148,10 @@ export class Board {
   }
 
   drawVisualMask() {
-    const board = this.getCurrentBoardAndUpdateHistory();
+    const record = this.history.newRecord();
     this.visualMask.forEach((row, i) => row.forEach((color, j) => {
       if (color === VISUAL_COLOR) {
-        board[i][j] = this.drawingColor;
+        record.board[i][j] = this.drawingColor;
       }
     }));
     this.visualMaskReset();
@@ -161,10 +159,10 @@ export class Board {
   }
 
   deleteVisualMask() {
-    const board = this.getCurrentBoardAndUpdateHistory();
+    const record = this.history.newRecord();
     this.visualMask.forEach((row, i) => row.forEach((color, j) => {
       if (color === VISUAL_COLOR) {
-        board[i][j] = CELL_DEFAULT_COLOR;
+        record.board[i][j] = CELL_DEFAULT_COLOR;
       }
     }));
     this.visualMaskReset();

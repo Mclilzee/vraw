@@ -47,12 +47,10 @@ export default function handleInput(e: KeyboardEvent) {
         handleVisualMode()
       };
     } break;
-    case "u": {
-      board.historyIndex = Math.max(board.historyIndex - 1, 0);
-    } break;
+    case "u": board.moveToPreviousState(); break;
     case "r": {
       if (e.ctrlKey) {
-        board.historyIndex = Math.min(board.history.length - 1, board.historyIndex + 1);
+        board.moveToNextState();
       }
     } break;
   }
