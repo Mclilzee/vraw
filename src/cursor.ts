@@ -4,6 +4,7 @@ export enum CursorMode {
   Visual = "-- VISUAL --",
   VisualLine = "-- VISUAL LINE --",
   VisualBlock = "-- VISUAL BLOCK --",
+  Delete = "-- DELETE --"
 }
 
 export class Cursor {
@@ -36,6 +37,10 @@ export class Cursor {
     return this.mode == CursorMode.VisualLine;
   }
 
+  inDeleteMode() {
+    return this.mode == CursorMode.Delete;
+  }
+
   switchToInsert() {
     this.mode = CursorMode.Insert;
   }
@@ -57,6 +62,10 @@ export class Cursor {
   switchToVisualLine() {
     this.mode = CursorMode.VisualLine;
     this.visualStartIndex = [this.x, this.y]
+  }
+
+  switchToDelete() {
+    this.mode = CursorMode.Delete;
   }
 
   getCursorLineInfo(): string {

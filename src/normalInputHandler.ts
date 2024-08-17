@@ -1,6 +1,8 @@
 import { board } from "./main";
 import { renderBoard, renderStatusInfo } from "./render";
+
 let moves = 0;
+let previousKey = "";
 
 export default function handleInput(e: KeyboardEvent) {
   if (e.key === "0" && moves === 0) {
@@ -15,6 +17,8 @@ export default function handleInput(e: KeyboardEvent) {
   switch (e.key) {
     case "i": switchCursorToInsert(); break;
     case "Escape": switchCursorToNormal(); break;
+    case "g": handleMovingToBottom(); break;
+    case "G": board.moveCursorToTop(); break;
     case "l": {
       moves = moves === 0 ? 1 : moves;
       board.moveCursorRight(moves);
@@ -107,10 +111,12 @@ function handleDeleteFromCursorToRowEnd() {
 }
 
 function handleDeleteRow() {
-  if (board.cursor.inAnyVisualMode()) {
+  if (board.cursor.inDeleteMode()) {
+    board.deleteArea(board.cursor.x, board.cursor.x, 0, board.columns - 1);
+  } else if (board.cursor.inAnyVisualMode()) {
     board.deleteVisualMask()
   } else {
-    board.deleteArea(board.cursor.x, board.cursor.x, 0, board.rows - 1);
+    board.cursor.switchToDelete();
   }
 }
 
@@ -119,5 +125,14 @@ function handleDeleteCell() {
     board.deleteVisualMask()
   } else {
     board.deleteCell();
+  }
+}
+
+function handleMovingToBottom() {
+  if (previousKey === "g") {
+    board.moveCursorToBottom()
+    previousKey = "";
+  } else {
+    previousKey = "g";
   }
 }

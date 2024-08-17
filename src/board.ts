@@ -60,6 +60,16 @@ export class Board {
     this.moveCursorRight(moves);
   }
 
+  moveCursorToBottom() {
+    const moves = this.rows - 1 - this.cursor.x;
+    this.moveCursorDown(moves);
+  }
+
+  moveCursorToTop() {
+    const moves = this.cursor.x;
+    this.moveCursorUp(moves);
+  }
+
   moveCursorRight(moves: number) {
     if (this.cursor.y < this.columns - 1) {
       const newPos = Math.min(this.cursor.y + moves, this.rows - 1);
@@ -95,7 +105,7 @@ export class Board {
       this.drawBoard(cursorOldX, cursorNewX, cursorOldY, cursorNewY);
     } else if (this.cursor.inAnyVisualMode()) {
       this.fillVisualMask(cursorNewX, cursorNewY);
-    } else if (this.cursor.inNormalMode()) {//this.cursor.inDeleteMode()) {
+    } else if (this.cursor.inDeleteMode()) {
       this.deleteArea(cursorOldX, cursorNewX, cursorOldY, cursorNewY);
     }
   }
