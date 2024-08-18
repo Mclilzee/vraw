@@ -44,6 +44,7 @@ export default function handleInput(e: KeyboardEvent) {
     case "D": handleDeleteFromCursorToRowEnd(); break;
     case "d": handleDeleteRow(); break;
     case "V": handleVisualLineMode(); break;
+    case "w": handleFindingPaintForward(); break;
     case "v": {
       if (e.ctrlKey) {
         handleVisualBlockMode()
@@ -137,4 +138,8 @@ function handleMovingToBottom() {
   } else {
     previousKey = "g";
   }
+}
+
+function handleFindingPaintForward() {
+  board.moveCursorToFirstWord()
 }
