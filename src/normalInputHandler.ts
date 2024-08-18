@@ -60,7 +60,9 @@ export default function handleInput(e: KeyboardEvent) {
   }
 
   renderBoard(board);
-  renderStatusInfo(board.cursor.getCursorLineInfo(), "orange", previousKey);
+
+  const secondInfo = moves > 0 ? moves.toString() : previousKey;
+  renderStatusInfo(board.cursor.getCursorLineInfo(), "orange", secondInfo);
 }
 
 

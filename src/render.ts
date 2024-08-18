@@ -36,14 +36,17 @@ export function renderBoard(board: Board) {
   renderBoardStatusBar(board.cursor.x + 1, board.cursor.y + 1);
 }
 
-export function renderStatusInfo(info: string, color: string, previousKey?: string) {
+export function renderStatusInfo(info: string, color: string, secondInfo?: string, secondColor?: string) {
   statusInfoCtx.reset();
   statusInfoCtx.fillStyle = color;
   statusInfoCtx.font = "15px Fira Sans";
   statusInfoCtx.fillText(info, TEXT_PADDING, STATUS_BAR_INFO_HEIGHT);
-  if (previousKey != undefined) {
-    statusInfoCtx.fillStyle = "black";
-    statusInfoCtx.fillText(previousKey,  statusInfo.width - RIGHT_TEXT_PADDING, STATUS_BAR_INFO_HEIGHT);
+  if (secondColor != undefined) {
+    statusInfoCtx.fillStyle = color;
+  }
+
+  if (secondInfo != undefined) {
+    statusInfoCtx.fillText(secondInfo,  statusInfo.width - RIGHT_TEXT_PADDING, STATUS_BAR_INFO_HEIGHT);
   }
 }
 
