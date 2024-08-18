@@ -1,5 +1,5 @@
 import { Cursor } from "./cursor";
-import History from "./history";
+import History, { HistoryRecord } from "./history";
 
 const CELL_DEFAULT_COLOR = "#a5a5a5";
 const NORMAL_COLOR = "#00000080";
@@ -68,6 +68,47 @@ export class Board {
   moveCursorToTop() {
     const moves = this.cursor.x;
     this.moveCursorUp(moves);
+  }
+
+  moveCursorToFirstWord() {
+    const record = this.history.currentRecord();
+    const cords = this.findFirstPaintedCellForward(record);
+    if (cords == undefined) {
+      return;
+    }
+    
+    if (cords[0] === record.cursorX) {
+      this.moveCursorRight(record.cursorY - cords[1]);
+    } else {
+      this.moveCursorRight(record.cursorY - cords[1]);
+      this.moveCursorDown(1);
+    }
+  }
+  private findFirstPaintedCellForward(record: HistoryRecord): [number, number] | undefined {
+    let startedSearch = record.board[record.cursorX][record.cursorY] !== CELL_DEFAULT_COLOR;
+    let x = record.cursorX;
+    for (let i = record.cursorY + 1; i < this.columns; i++) {
+      if (record.board[x][i] === CELL_DEFAULT_COLOR) {
+        if (startedSearch) {
+          return [i, x]
+        } else {
+          startedSearch = true;
+        }
+      }
+    }
+
+    x += 1;
+    if (x >= this.rows) {
+      return undefined;
+    }
+
+    for (let i = 0; i < this.columns; i++) {
+      if (startedSearch && record.board[x][i] === CELL_DEFAULT_COLOR) {
+        return [i, x]
+      }
+    }
+
+    return undefined;
   }
 
   moveCursorRight(moves: number) {
