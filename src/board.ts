@@ -1,4 +1,4 @@
-import { Cursor } from "./cursor";
+import { Cursor, CursorMode } from "./cursor";
 import History, { HistoryRecord } from "./history";
 
 const CELL_DEFAULT_COLOR = "#a5a5a5";
@@ -79,11 +79,12 @@ export class Board {
 
         if (cords[0] === record.cursorX) {
             this.moveCursorRight(cords[1] - record.cursorY);
-            console.log(cords);
         } else {
-            console.log(cords);
             this.moveCursorToRowEnd();
-            record.cursorY = 0;
+            const previousMode = this.cursor.mode;
+            this.cursor.mode = CursorMode.Normal;
+            this.moveCursorToRowStart();
+            this.cursor.mode = previousMode;
             this.moveCursorDown(1);
             this.moveCursorRight(cords[1] - record.cursorY);
         }
