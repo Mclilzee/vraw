@@ -78,22 +78,26 @@ export class Board {
         }
 
         if (cords[0] === record.cursorX) {
-            this.moveCursorRight(record.cursorY - cords[1]);
+            this.moveCursorRight(cords[1] - record.cursorY);
+            console.log(cords);
         } else {
-            this.moveCursorRight(record.cursorY - cords[1]);
+            console.log(cords);
+            this.moveCursorToRowEnd();
+            record.cursorY = 0;
             this.moveCursorDown(1);
+            this.moveCursorRight(cords[1] - record.cursorY);
         }
     }
 
     private findFirstPaintedCellForward(record: HistoryRecord): [number, number] | undefined {
-        let startedSearch = record.board[record.cursorX][record.cursorY] !== CELL_DEFAULT_COLOR;
+        let startedSearch = false;
         let x = record.cursorX;
-        for (let i = record.cursorY + 1; i < this.columns; i++) {
-            if (record.board[x][i] === CELL_DEFAULT_COLOR) {
+        for (let y = record.cursorY; y < this.columns; y++) {
+            if (record.board[x][y] === CELL_DEFAULT_COLOR) {
+                startedSearch = true;
+            } else {
                 if (startedSearch) {
-                    return [i, x]
-                } else {
-                    startedSearch = true;
+                    return [x, y]
                 }
             }
         }
@@ -103,19 +107,26 @@ export class Board {
             return undefined;
         }
 
-        for (let i = 0; i < this.columns; i++) {
-            if (startedSearch && record.board[x][i] === CELL_DEFAULT_COLOR) {
-                return [i, x]
+        for (let y = 0; y < this.columns; y++) {
+            if (record.board[x][y] !== CELL_DEFAULT_COLOR) {
+                return [x, y]
             }
         }
 
-        return undefined;
+        return [x, 0];
     }
+
+    private moveCursorToPosition(x: number, y: number) {
+        x = Math.min(Math.max(0, x), this.columns - 1);
+        y = Math.min(Math.max(0, y), this.columns - 1);
+        this.handleDrawing(this.cursor.x, x, this.cursor.y, y);
+    }
+
 
     moveCursorRight(moves: number) {
         if (this.cursor.y < this.columns - 1) {
             const newPos = Math.min(this.cursor.y + moves, this.rows - 1);
-            this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
+            this.handleDrawing(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
             this.cursor.y = newPos;
             this.history.currentRecord().cursorY = newPos;
         }
@@ -123,26 +134,26 @@ export class Board {
 
     moveCursorLeft(moves: number) {
         const newPos = Math.max(0, this.cursor.y - moves);
-        this.handleBoardChanges(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
+        this.handleDrawing(this.cursor.x, this.cursor.x, this.cursor.y, newPos);
         this.cursor.y = newPos;
         this.history.currentRecord().cursorY = newPos;
     }
 
     moveCursorUp(moves: number) {
         const newPos = Math.max(0, this.cursor.x - moves);
-        this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
+        this.handleDrawing(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         this.cursor.x = newPos;
         this.history.currentRecord().cursorX = newPos;
     }
 
     moveCursorDown(moves: number) {
         const newPos = Math.min(this.cursor.x + moves, this.columns);
-        this.handleBoardChanges(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
+        this.handleDrawing(this.cursor.x, newPos, this.cursor.y, this.cursor.y);
         this.cursor.x = newPos;
         this.history.currentRecord().cursorX = newPos;
     }
 
-    private handleBoardChanges(cursorOldX: number, cursorNewX: number, cursorOldY: number, cursorNewY: number) {
+    private handleDrawing(cursorOldX: number, cursorNewX: number, cursorOldY: number, cursorNewY: number) {
         if (this.cursor.inInsertMode()) {
             this.drawBoard(cursorOldX, cursorNewX, cursorOldY, cursorNewY);
         } else if (this.cursor.inAnyVisualMode()) {
