@@ -45,6 +45,7 @@ export default function handleInput(e: KeyboardEvent) {
     case "d": handleDeleteRow(); break;
     case "V": handleVisualLineMode(); break;
     case "w": handleFindingPaintForward(); break;
+    case "w": handleFindingPaintBackward(); break;
     case "v": {
       if (e.ctrlKey) {
         handleVisualBlockMode()
@@ -141,5 +142,9 @@ function handleMovingToBottom() {
 }
 
 function handleFindingPaintForward() {
-  board.moveCursorToFirstWord()
+  board.moveCursorToNextWord()
+}
+
+function handleFindingPaintBackward() {
+  board.moveCursorToPreviousWord()
 }

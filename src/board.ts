@@ -70,7 +70,7 @@ export class Board {
         this.moveCursorUp(moves);
     }
 
-    moveCursorToFirstWord() {
+    moveCursorToNextWord() {
         const record = this.history.currentRecord();
         const cords = this.findFirstPaintedCellForward(record);
         if (cords == undefined) {
@@ -88,6 +88,54 @@ export class Board {
             this.moveCursorDown(1);
             this.moveCursorRight(cords[1] - record.cursorY);
         }
+    }
+
+    moveCursorToPreviousWord() {
+        const record = this.history.currentRecord();
+        const cords = this.findFirstPaintedCellBackward(record);
+        if (cords == undefined) {
+            return;
+        }
+
+        if (cords[0] === record.cursorX) {
+            this.moveCursorLeft(record.cursorY - cords[1]);
+        } else {
+            this.moveCursorToRowStart();
+            const previousMode = this.cursor.mode;
+            this.cursor.mode = CursorMode.Normal;
+            this.moveCursorToRowEnd();
+            this.cursor.mode = previousMode;
+            this.moveCursorUp(1);
+            this.moveCursorLeft(record.cursorY - cords[1]);
+        }
+    }
+
+
+    private findFirstPaintedCellBackward(record: HistoryRecord): [number, number] | undefined {
+        let startedSearch = false;
+        let x = record.cursorX;
+        for (let y = record.cursorY; y >= 0; y--) {
+            if (record.board[x][y] === CELL_DEFAULT_COLOR) {
+                startedSearch = true;
+            } else {
+                if (startedSearch) {
+                    return [x, y]
+                }
+            }
+        }
+
+        x -= 1;
+        if (x < 0) {
+            return undefined;
+        }
+
+        for (let y = 0; y < this.columns; y++) {
+            if (record.board[x][y] !== CELL_DEFAULT_COLOR) {
+                return [x, y]
+            }
+        }
+
+        return [x, 0];
     }
 
     private findFirstPaintedCellForward(record: HistoryRecord): [number, number] | undefined {
