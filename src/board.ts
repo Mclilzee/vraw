@@ -110,32 +110,43 @@ export class Board {
         }
     }
 
-
-    private findFirstPaintedCellBackward(record: HistoryRecord): [number, number] | undefined {
+    private findPreviousWordBeggining(row: string[], startColumn: number): number | undefined {
         let startedSearch = false;
-        let x = record.cursorX;
-        for (let y = record.cursorY; y >= 0; y--) {
-            if (record.board[x][y] === CELL_DEFAULT_COLOR) {
+        for (let y = startColumn - 1; y >= 0; y--) {
+            if (y === 0 && startedSearch) {
+                return y;
+            }
+
+            if (row[y] !== CELL_DEFAULT_COLOR) {
                 startedSearch = true;
-            } else {
+            } else if (row[y] === CELL_DEFAULT_COLOR) {
                 if (startedSearch) {
-                    return [x, y]
+                    return y + 1;
                 }
             }
         }
 
-        x -= 1;
-        if (x < 0) {
+        return undefined;
+    }
+
+    private findFirstPaintedCellBackward(record: HistoryRecord): [number, number] | undefined {
+        let row = record.cursorX;
+        const column = this.findPreviousWordBeggining(record.board[row], record.cursorY);
+        if (column !== undefined) {
+            return [row, column];
+        }
+
+        row -= 1;
+        if (record.cursorX < 0) {
             return undefined;
         }
 
-        for (let y = 0; y < this.columns; y++) {
-            if (record.board[x][y] !== CELL_DEFAULT_COLOR) {
-                return [x, y]
-            }
+        const previousRowColumn = this.findPreviousWordBeggining(record.board[row], this.columns - 1);
+        if (previousRowColumn !== undefined) {
+            return [row, previousRowColumn]
         }
 
-        return [x, 0];
+        return [row, 0];
     }
 
     private findFirstPaintedCellForward(record: HistoryRecord): [number, number] | undefined {
