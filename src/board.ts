@@ -105,7 +105,7 @@ export class Board {
             this.cursor.mode = CursorMode.Normal;
             this.moveCursorToRowStart();
             this.cursor.mode = previousMode;
-            this.moveCursorUp(1);
+            this.moveCursorDown(1);
             this.moveCursorRight(cords[1] - record.cursorY);
         }
     }
@@ -157,7 +157,7 @@ export class Board {
         }
 
         row -= 1;
-        if (record.cursorX < 0) {
+        if (row < 0) {
             return undefined;
         }
 
@@ -204,13 +204,13 @@ export class Board {
         }
 
         row += 1;
-        if (record.cursorX >= this.columns) {
+        if (row >= this.rows) {
             return undefined;
         }
 
-        const previousRowColumn = this.findNextWordEndColumn(record.board[row], this.columns - 1);
-        if (previousRowColumn !== undefined) {
-            return [row, previousRowColumn]
+        const nextRowColumn = this.findNextWordEndColumn(record.board[row], this.columns - 1);
+        if (nextRowColumn !== undefined) {
+            return [row, nextRowColumn]
         }
 
         return [row, 0];
