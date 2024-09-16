@@ -4,8 +4,8 @@ import { renderBoard, renderStatusInfo } from "./render";
 import handleNormalInput from './normalInputHandler';
 
 enum InputMode {
-  Normal,
-  Command
+    Normal,
+    Command
 }
 
 const currentInputMode = InputMode.Normal;
@@ -14,10 +14,10 @@ const COLUMNS = 40;
 const board = new Board(ROWS, COLUMNS);
 
 document.addEventListener("keydown", (e) => {
-  e.preventDefault();
-  if (currentInputMode === InputMode.Normal) {
-    handleNormalInput(e);
-  }
+    e.preventDefault();
+    if (currentInputMode === InputMode.Normal) {
+        handleNormalInput(e);
+    }
 });
 
 renderBoard(board);
