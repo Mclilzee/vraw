@@ -208,7 +208,7 @@ export class Board {
             return undefined;
         }
 
-        const nextRowColumn = this.findNextWordEndColumn(record.board[row], this.columns - 1);
+        const nextRowColumn = this.findNextWordEndColumn(record.board[row], 0);
         if (nextRowColumn !== undefined) {
             return [row, nextRowColumn]
         }
