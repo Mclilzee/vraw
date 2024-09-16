@@ -70,9 +70,9 @@ export class Board {
         this.moveCursorUp(moves);
     }
 
-    moveCursorToNextWord() {
+    moveCursorToNextWordStart() {
         const record = this.history.currentRecord();
-        const cords = this.findFirstPaintedCellForward(record);
+        const cords = this.findNextWordStart(record);
         if (cords == undefined) {
             return;
         }
@@ -90,9 +90,29 @@ export class Board {
         }
     }
 
-    moveCursorToPreviousWord() {
+    moveCursorToNextWordEnd() {
         const record = this.history.currentRecord();
-        const cords = this.findFirstPaintedCellBackward(record);
+        const cords = this.findNextWordEnd(record);
+        if (cords == undefined) {
+            return;
+        }
+
+        if (cords[0] === record.cursorX) {
+            this.moveCursorRight(cords[1] - record.cursorY);
+        } else {
+            this.moveCursorToRowEnd();
+            const previousMode = this.cursor.mode;
+            this.cursor.mode = CursorMode.Normal;
+            this.moveCursorToRowStart();
+            this.cursor.mode = previousMode;
+            this.moveCursorUp(1);
+            this.moveCursorRight(cords[1] - record.cursorY);
+        }
+    }
+
+    moveCursorToPreviousWordStart() {
+        const record = this.history.currentRecord();
+        const cords = this.findPreviousWordStart(record);
         if (cords == undefined) {
             return;
         }
@@ -110,13 +130,9 @@ export class Board {
         }
     }
 
-    private findPreviousWordBeggining(row: string[], startColumn: number): number | undefined {
+    private findPreviousWordStartColumn(row: string[], startColumn: number): number | undefined {
         let startedSearch = false;
         for (let y = startColumn - 1; y >= 0; y--) {
-            if (y === 0 && startedSearch) {
-                return y;
-            }
-
             if (row[y] !== CELL_DEFAULT_COLOR) {
                 startedSearch = true;
             } else if (row[y] === CELL_DEFAULT_COLOR) {
@@ -124,14 +140,18 @@ export class Board {
                     return y + 1;
                 }
             }
+
+            if (y === 0 && startedSearch) {
+                return y;
+            }
         }
 
         return undefined;
     }
 
-    private findFirstPaintedCellBackward(record: HistoryRecord): [number, number] | undefined {
+    private findPreviousWordStart(record: HistoryRecord): [number, number] | undefined {
         let row = record.cursorX;
-        const column = this.findPreviousWordBeggining(record.board[row], record.cursorY);
+        const column = this.findPreviousWordStartColumn(record.board[row], record.cursorY);
         if (column !== undefined) {
             return [row, column];
         }
@@ -141,7 +161,7 @@ export class Board {
             return undefined;
         }
 
-        const previousRowColumn = this.findPreviousWordBeggining(record.board[row], this.columns - 1);
+        const previousRowColumn = this.findPreviousWordStartColumn(record.board[row], this.columns - 1);
         if (previousRowColumn !== undefined) {
             return [row, previousRowColumn]
         }
@@ -149,7 +169,7 @@ export class Board {
         return [row, 0];
     }
 
-    private findFirstPaintedCellForward(record: HistoryRecord): [number, number] | undefined {
+    private findNextWordStart(record: HistoryRecord): [number, number] | undefined {
         let startedSearch = false;
         let x = record.cursorX;
         for (let y = record.cursorY; y < this.columns; y++) {
@@ -176,12 +196,46 @@ export class Board {
         return [x, 0];
     }
 
-    private moveCursorToPosition(x: number, y: number) {
-        x = Math.min(Math.max(0, x), this.columns - 1);
-        y = Math.min(Math.max(0, y), this.columns - 1);
-        this.handleDrawing(this.cursor.x, x, this.cursor.y, y);
+    private findNextWordEnd(record: HistoryRecord): [number, number] | undefined {
+        let row = record.cursorX;
+        const column = this.findNextWordEndColumn(record.board[row], record.cursorY);
+        if (column !== undefined) {
+            return [row, column];
+        }
+
+        row += 1;
+        if (record.cursorX >= this.columns) {
+            return undefined;
+        }
+
+        const previousRowColumn = this.findNextWordEndColumn(record.board[row], this.columns - 1);
+        if (previousRowColumn !== undefined) {
+            return [row, previousRowColumn]
+        }
+
+        return [row, 0];
+
     }
 
+    private findNextWordEndColumn(row: string[], startColumn: number): number | undefined {
+        let startedSearch = false;
+        for (let y = startColumn + 1; y < this.columns; y++) {
+            if (row[y] !== CELL_DEFAULT_COLOR) {
+                startedSearch = true;
+            } else if (row[y] === CELL_DEFAULT_COLOR) {
+                if (startedSearch) {
+                    return y - 1;
+                }
+            }
+
+            if (y === this.columns - 1 && startedSearch) {
+                return y;
+            }
+
+        }
+
+        return undefined;
+    }
 
     moveCursorRight(moves: number) {
         if (this.cursor.y < this.columns - 1) {

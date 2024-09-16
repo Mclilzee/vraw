@@ -142,9 +142,9 @@ function handleMovingToBottom() {
 }
 
 function handleFindingPaintForward() {
-  board.moveCursorToNextWord()
+  board.moveCursorToNextWordStart()
 }
 
 function handleFindingPaintBackward() {
-  board.moveCursorToPreviousWord()
+  board.moveCursorToPreviousWordStart()
 }
