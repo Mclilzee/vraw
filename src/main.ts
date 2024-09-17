@@ -2,13 +2,9 @@ import './style.css'
 import { Board as Board } from './board';
 import { renderBoard, renderStatusInfo } from "./render";
 import handleNormalInput from './normalInputHandler';
+import handleCommandInput from './handleCommandInput';
 
-enum InputMode {
-    Normal,
-    Command
-}
-
-let currentInputMode = InputMode.Normal;
+let comandMode = false;
 const ROWS = 40;
 const COLUMNS = 40;
 const board = new Board(ROWS, COLUMNS);
@@ -16,9 +12,15 @@ const board = new Board(ROWS, COLUMNS);
 document.addEventListener("keydown", (e) => {
     e.preventDefault();
 
-    if (e.key === ":" && currentInputMode === InputMode.Normal) {
-        currentInputMode = InputMode.Command;
-    } else if (currentInputMode === InputMode.Normal) {
+    if (e.key === ":" && !comandMode) {
+        comandMode = true;
+        handleCommandInput(e);
+    } else if (e.key === "\n" && comandMode) {
+        comandMode = false;
+        handleCommandInput(e);
+    } else if (comandMode) {
+        handleCommandInput(e);
+    } else {
         handleNormalInput(e);
     }
 });
