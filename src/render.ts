@@ -7,6 +7,7 @@ const RIGHT_TEXT_PADDING = 30;
 const BAR_HEIGHT = 15;
 const CURSOR_POSITION_RIGHT_PADDING = 15;
 const TEXT_PADDING = 3;
+const VERTICAL_TEXT_PADDING = 5;
 const STATUS_BAR_INFO_HEIGHT = 25;
 
 boardCanvas.width = BOARD_WIDTH + RIGHT_TEXT_PADDING * 2;
@@ -40,7 +41,7 @@ export function renderStatusInfo(info: string, color: string, secondInfo?: strin
   statusInfoCtx.reset();
   statusInfoCtx.fillStyle = color;
   statusInfoCtx.font = "15px Fira Sans";
-  statusInfoCtx.fillText(info, TEXT_PADDING, STATUS_BAR_INFO_HEIGHT - TEXT_PADDING);
+  statusInfoCtx.fillText(info, TEXT_PADDING, STATUS_BAR_INFO_HEIGHT - VERTICAL_TEXT_PADDING);
   if (secondColor != undefined) {
     statusInfoCtx.fillStyle = color;
   }
