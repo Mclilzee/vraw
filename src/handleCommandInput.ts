@@ -1,20 +1,19 @@
 import { renderStatusInfo } from "./render";
 
-let command = ":";
-const uselessKeyEvents = ["Shift", "Control"]
-
+let command = "";
 export default function handleCommandInput(e: KeyboardEvent) {
-    if (uselessKeyEvents.includes(e.key)) {
-        return;
+    switch (e.key) {
+        case "Shift":
+        case "Control": break;
+        case "Escape": command = ""; break;
+        case "Enter": processCommand(); break;
+        case "Backspace": command = command.substring(0, Math.max(1, command.length - 1)); break;
+        default: command += e.key; break;
     }
 
-    if (e.key === "Backspace") {
-        command = command.substring(0, Math.max(1, command.length - 1));
-    } else if (e.key === ":" && command.length > 1) {
-        command = command + e.key;
-    } else {
-        command += e.key;
-    }
+    renderStatusInfo(command, "green");
+}
 
-  renderStatusInfo(command, "green");
+function processCommand() {
+    command = "";
 }
