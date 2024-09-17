@@ -15,5 +15,6 @@ export default function handleCommandInput(e: KeyboardEvent) {
     } else {
         command += e.key;
     }
+
   renderStatusInfo(command, "green");
 }

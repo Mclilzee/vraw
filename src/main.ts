@@ -8,16 +8,18 @@ let comandMode = false;
 const ROWS = 40;
 const COLUMNS = 40;
 const board = new Board(ROWS, COLUMNS);
+const modeSwitchingKeys = ["Enter", "Escape"];
 
 document.addEventListener("keydown", (e) => {
     e.preventDefault();
 
-    if (e.key === ":" && !comandMode) {
+    if (!comandMode && e.key === ":") {
         comandMode = true;
         handleCommandInput(e);
-    } else if (e.key === "\n" && comandMode) {
-        comandMode = false;
+    } else if (comandMode && modeSwitchingKeys.includes(e.key)) {
         handleCommandInput(e);
+        comandMode = false;
+        handleNormalInput(e);
     } else if (comandMode) {
         handleCommandInput(e);
     } else {
