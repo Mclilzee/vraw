@@ -8,14 +8,17 @@ enum InputMode {
     Command
 }
 
-const currentInputMode = InputMode.Normal;
+let currentInputMode = InputMode.Normal;
 const ROWS = 40;
 const COLUMNS = 40;
 const board = new Board(ROWS, COLUMNS);
 
 document.addEventListener("keydown", (e) => {
     e.preventDefault();
-    if (currentInputMode === InputMode.Normal) {
+
+    if (e.key === ":" && currentInputMode === InputMode.Normal) {
+        currentInputMode = InputMode.Command;
+    } else if (currentInputMode === InputMode.Normal) {
         handleNormalInput(e);
     }
 });
