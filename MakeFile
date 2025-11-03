@@ -1,0 +1,6 @@
+export PKG_CONFIG_PATH=./raylib/lib/pkgconfig
+CPPFLAGS=-Wall -Wextra -ggdb -pedantic `pkg-config --cppflags --static $(PKGS)`
+LIBS=`pkg-config --libs --static $(PKGS)`
+
+main: main.cpp
+    $(clang++) $(CPPFLAGS) -o main $(LIBS)
