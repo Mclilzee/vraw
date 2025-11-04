@@ -8,24 +8,26 @@ static const int CX = SCREEN_WIDTH / 2;
 static const int CY = SCREEN_HEIGHT / 2;
 static const int WIDTH = 600;
 static const int HEIGHT = 600;
-static const int LEFT_TEXT_PADDING = 30;
+static const int NUMBERS_LEFT_BAR_PADDING = 30;
 static const int BAR_HEIGHT = 15;
 static const int CURSOR_POSITION_RIGHT_PADDING = 15;
 static const int TEXT_PADDING = 3;
 static const int VERTICAL_TEXT_PADDING = 5;
-static const int STATUS_BAR_INFO_HEIGHT = 25;
-static const int CANVAS_WIDTH = WIDTH + LEFT_TEXT_PADDING * 2;
-static const int CANVAS_HEIGHT = HEIGHT + LEFT_TEXT_PADDING + BAR_HEIGHT;
+static const int NUMBERS_BOTTOM_BAR_PADDING = 25;
+static const int CANVAS_WIDTH = WIDTH + NUMBERS_LEFT_BAR_PADDING * 2;
+static const int CANVAS_HEIGHT = HEIGHT + NUMBERS_LEFT_BAR_PADDING + BAR_HEIGHT;
 static const int STATUS_INFO_WIDTH = CANVAS_WIDTH;
-static const int STATUS_INFO_HEIGHT = STATUS_BAR_INFO_HEIGHT;
-static const Vector2 BOARD_START{CX - WIDTH / 2, CY - HEIGHT / 2};
-static const Vector2 BOARD_END{CX + WIDTH / 2, CY + HEIGHT / 2};
+static const int STATUS_INFO_HEIGHT = NUMBERS_BOTTOM_BAR_PADDING;
+static const Vector2 BOARD_START{CX - WIDTH / 2,
+                                 CY - HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING};
+static const Vector2 BOARD_END{CX + WIDTH / 2,
+                               CY + HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING};
 
 class Cursor {
   public:
     int x = 0;
     int y = 0;
-    Color color = Color {0, 0, 0, 150};
+    Color color = Color{0, 0, 0, 150};
 };
 
 class Board {
