@@ -52,8 +52,12 @@ void render_board(Board *board) {
     }
 
     for (int i = 0; i < ROWS; i++) {
-        DrawLine(RIGHT_TEXT_PADDING, i * height,
-                 BOARD_WIDTH + RIGHT_TEXT_PADDING, i * height, BLACK);
+        int x_start = RIGHT_TEXT_PADDING;
+        int x_end = BOARD_WIDTH + RIGHT_TEXT_PADDING;
+        int x_offset = SCREEN_WIDTH / 2 - (x_start - x_end) / 2;
+        x_start -= x_offset;
+        x_end += x_offset;
+        DrawLine(x_start, i * height, x_end, i * height, BLACK);
         DrawLine(i * width + RIGHT_TEXT_PADDING, 0,
                  i * width + RIGHT_TEXT_PADDING, BOARD_HEIGHT, BLACK);
     }
