@@ -1,76 +1,91 @@
+#include <iostream>
 #include <raylib.h>
+#include <vector>
 
-static const int SCREEN_WIDTH = 1200;
-static const int SCREEN_HEIGHT = 1200;
-static const int COLUMNS = 40;
-static const int ROWS = 40;
-static const int BOARD_WIDTH = 600;
-static const int BOARD_HEIGHT = 600;
-static const int RIGHT_TEXT_PADDING = 30;
+static const int SCREEN_WIDTH = 800;
+static const int SCREEN_HEIGHT = 800;
+static const int CX = SCREEN_WIDTH / 2;
+static const int CY = SCREEN_HEIGHT / 2;
+static const int WIDTH = 600;
+static const int HEIGHT = 600;
+static const int LEFT_TEXT_PADDING = 30;
 static const int BAR_HEIGHT = 15;
 static const int CURSOR_POSITION_RIGHT_PADDING = 15;
 static const int TEXT_PADDING = 3;
 static const int VERTICAL_TEXT_PADDING = 5;
 static const int STATUS_BAR_INFO_HEIGHT = 25;
-static const int CANVAS_WIDTH = BOARD_WIDTH + RIGHT_TEXT_PADDING * 2;
-static const int CANVAS_HEIGHT = BOARD_HEIGHT + RIGHT_TEXT_PADDING + BAR_HEIGHT;
+static const int CANVAS_WIDTH = WIDTH + LEFT_TEXT_PADDING * 2;
+static const int CANVAS_HEIGHT = HEIGHT + LEFT_TEXT_PADDING + BAR_HEIGHT;
 static const int STATUS_INFO_WIDTH = CANVAS_WIDTH;
 static const int STATUS_INFO_HEIGHT = STATUS_BAR_INFO_HEIGHT;
+static const Vector2 BOARD_START{CX - WIDTH / 2, CY - HEIGHT / 2};
+static const Vector2 BOARD_END{CX + WIDTH / 2, CY + HEIGHT / 2};
 
 class Cursor {
   public:
     int x = 0;
     int y = 0;
-    Color color = RED;
+    Color color = Color {0, 0, 0, 150};
 };
 
 class Board {
   public:
-    Color cells[COLUMNS * ROWS];
-    Color visual_mask[COLUMNS * ROWS] = {0};
+    int rows;
+    int columns;
+    std::vector<Color> cells;
+    std::vector<Color> visual_mask;
     Cursor cursor;
 
-    Board() {
-        for (int i = 0; i < COLUMNS * ROWS; i++) {
-            this->cells[i] = RAYWHITE;
+    Board(int rows, int columns) {
+        this->rows = rows;
+        this->columns = columns;
+
+        std::vector<Color> cells = std::vector<Color>(rows * columns);
+        std::vector<Color> visual_mask = std::vector<Color>(rows * columns);
+        for (int i = 0; i < columns * rows; i++) {
+            cells.at(i) = RAYWHITE;
+            visual_mask.at(i) = Color{};
         }
+
+        this->cells = cells;
+        this->visual_mask = visual_mask;
     }
 };
 
 void render_board(Board *board) {
     ClearBackground(DARKGRAY);
-    int width = BOARD_WIDTH / COLUMNS;
-    int height = BOARD_HEIGHT / ROWS;
-    for (int i = 0; i < ROWS; i++) {
-        for (int j = 0; j < COLUMNS; j++) {
-            int x = j * width + RIGHT_TEXT_PADDING;
-            DrawRectangle(x, i * height, width, height,
-                          board->cells[ROWS * i + j]);
-            DrawRectangle(x, i * height, width, height,
-                          board->visual_mask[i * j]);
+    int width = WIDTH / board->columns;
+    int height = HEIGHT / board->rows;
+    for (int i = 0; i < board->rows; i++) {
+        for (int j = 0; j < board->rows; j++) {
+            int x = BOARD_START.x + j * width;
+            int y = BOARD_START.y + i * height;
+            DrawRectangle(x, y, width, height,
+                          board->cells.at(board->rows * i + j));
+            DrawRectangle(x, y, width, height,
+                          board->visual_mask.at(board->rows * i + j));
         }
     }
 
-    for (int i = 0; i < ROWS; i++) {
-        int x_start = RIGHT_TEXT_PADDING;
-        int x_end = BOARD_WIDTH + RIGHT_TEXT_PADDING;
-        int x_offset = SCREEN_WIDTH / 2 - (x_start - x_end) / 2;
-        x_start -= x_offset;
-        x_end += x_offset;
-        DrawLine(x_start, i * height, x_end, i * height, BLACK);
-        DrawLine(i * width + RIGHT_TEXT_PADDING, 0,
-                 i * width + RIGHT_TEXT_PADDING, BOARD_HEIGHT, BLACK);
+    int x = board->cursor.x * width + BOARD_START.x;
+    int y = board->cursor.y * height + BOARD_START.y;
+    DrawRectangle(x, y, width, height, board->cursor.color);
+
+    // Include one more for bottom line drawing
+    for (int i = 0; i <= board->rows; i++) {
+        int y = BOARD_START.y + i * height;
+        DrawLine(BOARD_START.x, y, BOARD_END.x, y, BLACK);
+        int x = BOARD_START.x + i * width;
+        DrawLine(x, BOARD_START.y, x, BOARD_END.y, BLACK);
     }
 
-    DrawRectangle(board->cursor.y * width + RIGHT_TEXT_PADDING,
-                  board->cursor.x * height, width, height, board->cursor.color);
     // renderBoardNumbers(board);
     // renderBoardStatusBar(board.cursor.x + 1, board.cursor.y + 1);
 }
 
 int main() {
-    InitWindow(BOARD_WIDTH * 2, BOARD_HEIGHT * 2, "V-Draw");
-    Board board{};
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "V-Draw");
+    Board board{10, 10};
     while (!WindowShouldClose()) {
         BeginDrawing();
         render_board(&board);
