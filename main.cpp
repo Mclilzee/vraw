@@ -97,6 +97,18 @@ void render_board_number(Board board) {
     }
 }
 
+void render_board_status_bar(Cursor cursour) {
+    int y = BOARD_END.y + NUMBERS_BOTTOM_BAR_PADDING + BAR_HEIGHT;
+    DrawRectangle(BOARD_START.x - NUMBERS_LEFT_BAR_PADDING, y,
+                  WIDTH + NUMBERS_LEFT_BAR_PADDING * 2, BAR_HEIGHT, GRAY);
+    // boardCtx.fillText("vim/drawing.ts", TEXT_PADDING,
+    //                   y + BAR_HEIGHT / 2 + TEXT_PADDING);
+    //
+    // boardCtx.fillText(`${cursorRow}, $ { cursorColumn }`,
+    //                   BOARD_WIDTH - CURSOR_POSITION_RIGHT_PADDING,
+    //                   y + BAR_HEIGHT / 2 + TEXT_PADDING);
+}
+
 void render_board(Board board) {
     ClearBackground(DARKGRAY);
     int width = WIDTH / board.columns;
@@ -125,7 +137,7 @@ void render_board(Board board) {
     }
 
     render_board_number(board);
-    // renderBoardStatusBar(board.cursor.x + 1, board.cursor.y + 1);
+    render_board_status_bar(board.cursor);
 }
 
 int main() {
