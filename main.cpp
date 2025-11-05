@@ -16,10 +16,10 @@ static const int CURSOR_POSITION_RIGHT_PADDING = 15;
 static const int TEXT_X_PADDING = 10;
 static const int TEXT_Y_PADDING = 5;
 static const int NUMBERS_BOTTOM_BAR_PADDING = 10;
-static const Vector2 BOARD_START{CX - WIDTH / 2,
-                                 CY - HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING};
-static const Vector2 BOARD_END{CX + WIDTH / 2,
-                               CY + HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING};
+static const Vector2 BOARD_START{
+    CX - WIDTH / 2, CY - HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING - BAR_HEIGHT};
+static const Vector2 BOARD_END{
+    CX + WIDTH / 2, CY + HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING - BAR_HEIGHT};
 static const std::string HEX_MAP[] = {"0", "1", "2", "3", "4", "5", "6", "7",
                                       "8", "9", "A", "B", "C", "D", "E", "F"};
 
@@ -156,9 +156,22 @@ void render_board(Board board) {
 
 int main() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "V-Draw");
-    Board board{40, 40};
+    const int ROWS = 40;
+    const int COLUMNS = 40;
+    Board board{ROWS, COLUMNS};
     while (!WindowShouldClose()) {
         BeginDrawing();
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            Vector2 position = GetMousePosition();
+            int width = WIDTH / ROWS;
+            int height = HEIGHT / COLUMNS;
+            int x = (position.x - BOARD_START.x) / width;
+            int y = (position.y - BOARD_START.y) / height;
+            if (x >= 0 && x < ROWS && y >= 0 && y < COLUMNS) {
+                board.cursor.x = x;
+                board.cursor.y = y;
+            }
+        }
         render_board(board);
         EndDrawing();
     }
