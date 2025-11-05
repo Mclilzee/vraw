@@ -6,13 +6,14 @@
 
 static const int SCREEN_WIDTH = 1000;
 static const int SCREEN_HEIGHT = 1000;
+static const int ROWS = 40;
+static const int COLUMNS = 40;
 static const int WIDTH = 800;
 static const int HEIGHT = 800;
 static const int CX = SCREEN_WIDTH / 2;
 static const int CY = SCREEN_HEIGHT / 2;
 static const int NUMBERS_LEFT_BAR_PADDING = 20;
 static const int BAR_HEIGHT = 18;
-static const int CURSOR_POSITION_RIGHT_PADDING = 15;
 static const int TEXT_X_PADDING = 10;
 static const int TEXT_Y_PADDING = 5;
 static const int NUMBERS_BOTTOM_BAR_PADDING = 10;
@@ -77,7 +78,7 @@ void render_board_number(Board board) {
 
     std::vector<int> v_numbers = get_numbers(board.cursor.y, board.columns);
     std::vector<int> h_numbers = get_numbers(board.cursor.x, board.rows);
-    for (int i = 0; i < v_numbers.size(); i++) {
+    for (size_t i = 0; i < v_numbers.size(); i++) {
         int y = BOARD_START.y + i * height + font_padding;
 
         int number = v_numbers.at(i);
@@ -122,7 +123,7 @@ void render_board_status_bar(Board board) {
              y + BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
 }
 
-void render_board(Board board) {
+static void render_board(Board board) {
     ClearBackground(DARKGRAY);
     int width = WIDTH / board.columns;
     int height = HEIGHT / board.rows;
@@ -156,8 +157,6 @@ void render_board(Board board) {
 int main() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "V-Draw");
     EnableEventWaiting();
-    const int ROWS = 40;
-    const int COLUMNS = 40;
     Board board{ROWS, COLUMNS};
     while (!WindowShouldClose()) {
         BeginDrawing();
