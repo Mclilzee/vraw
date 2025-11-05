@@ -70,16 +70,17 @@ std::vector<int> get_numbers(int anchor, int size) {
 }
 
 void render_board_number(Board board) {
-    std::vector<int> vertical_numbers = get_numbers(board.cursor.x, board.rows);
     int height = HEIGHT / board.rows;
     int width = WIDTH / board.columns;
     int font_size = height / 2;
     int font_padding = font_size / 2;
 
-    for (int i = 0; i < vertical_numbers.size(); i++) {
+    std::vector<int> v_numbers = get_numbers(board.cursor.y, board.columns);
+    std::vector<int> h_numbers = get_numbers(board.cursor.x, board.rows);
+    for (int i = 0; i < v_numbers.size(); i++) {
         int y = BOARD_START.y + i * height + font_padding;
-        int number = vertical_numbers.at(i);
 
+        int number = v_numbers.at(i);
         if (number == 0) {
             DrawText(std::to_string(number).c_str(),
                      BOARD_START.x - NUMBERS_LEFT_BAR_PADDING, y, font_size,
@@ -90,10 +91,8 @@ void render_board_number(Board board) {
                      WHITE);
         }
 
-        std::vector<int> horizontal_numbers =
-            get_numbers(board.cursor.y, board.columns);
         int x = BOARD_START.x + i * width + font_padding;
-        number = horizontal_numbers.at(i);
+        number = h_numbers.at(i);
         if (number == 0) {
             DrawText(std::to_string(number).c_str(), x,
                      BOARD_END.y + NUMBERS_BOTTOM_BAR_PADDING, font_size, RED);
