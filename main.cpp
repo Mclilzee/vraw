@@ -155,6 +155,7 @@ void render_board(Board board) {
 
 int main() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "V-Draw");
+    EnableEventWaiting();
     const int ROWS = 40;
     const int COLUMNS = 40;
     Board board{ROWS, COLUMNS};
