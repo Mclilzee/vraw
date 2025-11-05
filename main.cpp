@@ -25,7 +25,7 @@ class Cursor {
   public:
     int x = 0;
     int y = 0;
-    Color color = Color{0, 0, 0, 150};
+    Color color = GetColor(0x0000008A);
 };
 
 class Board {
@@ -99,8 +99,13 @@ void render_board_number(Board board) {
 
 void render_board_status_bar(Cursor cursour) {
     int y = BOARD_END.y + NUMBERS_BOTTOM_BAR_PADDING + BAR_HEIGHT;
-    DrawRectangle(BOARD_START.x - NUMBERS_LEFT_BAR_PADDING, y,
-                  WIDTH + NUMBERS_LEFT_BAR_PADDING * 2, BAR_HEIGHT, GRAY);
+    int x = BOARD_START.x - NUMBERS_LEFT_BAR_PADDING;
+    int font_size = BAR_HEIGHT - TEXT_PADDING;
+    DrawRectangle(x, y, WIDTH + NUMBERS_LEFT_BAR_PADDING * 2, BAR_HEIGHT, GRAY);
+
+    std::string text = "vim/drawing.cpp";
+    DrawText(text.c_str(), x + TEXT_PADDING, y + BAR_HEIGHT / 2 - font_size / 2, font_size,
+             WHITE);
     // boardCtx.fillText("vim/drawing.ts", TEXT_PADDING,
     //                   y + BAR_HEIGHT / 2 + TEXT_PADDING);
     //
