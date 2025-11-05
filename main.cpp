@@ -11,9 +11,10 @@ static const int HEIGHT = 800;
 static const int CX = SCREEN_WIDTH / 2;
 static const int CY = SCREEN_HEIGHT / 2;
 static const int NUMBERS_LEFT_BAR_PADDING = 20;
-static const int BAR_HEIGHT = 15;
+static const int BAR_HEIGHT = 18;
 static const int CURSOR_POSITION_RIGHT_PADDING = 15;
-static const int TEXT_PADDING = 3;
+static const int TEXT_X_PADDING = 10;
+static const int TEXT_Y_PADDING = 5;
 static const int NUMBERS_BOTTOM_BAR_PADDING = 10;
 static const Vector2 BOARD_START{CX - WIDTH / 2,
                                  CY - HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING};
@@ -107,25 +108,19 @@ void render_board_number(Board board) {
 void render_board_status_bar(Board board) {
     int y = BOARD_END.y + NUMBERS_BOTTOM_BAR_PADDING + BAR_HEIGHT;
     int x = BOARD_START.x - NUMBERS_LEFT_BAR_PADDING;
-    int font_size = BAR_HEIGHT - TEXT_PADDING;
+    int font_size = BAR_HEIGHT - TEXT_Y_PADDING;
     DrawRectangle(x, y, WIDTH + NUMBERS_LEFT_BAR_PADDING * 2, BAR_HEIGHT, GRAY);
-
-    std::string text = "vim/drawing.cpp";
-    DrawText(text.c_str(), x + TEXT_PADDING, y + BAR_HEIGHT / 2 - font_size / 2,
-             font_size, WHITE);
-
-    std::string position = std::to_string(board.cursor.x + 1) + "," +
-                           std::to_string(board.cursor.y + 1);
-
-    x = BOARD_END.x - font_size * position.size();
-    DrawText(position.c_str(), x - TEXT_PADDING,
-             y + BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
 
     std::string color =
         color_to_hex(board.cells.at(board.cursor.x * board.cursor.y));
-    x = BOARD_END.x / 2;
-    DrawText(color.c_str(), x, y + BAR_HEIGHT / 2 - font_size / 2, font_size,
-             WHITE);
+    DrawText(color.c_str(), x + TEXT_X_PADDING,
+             y + BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
+
+    std::string position = std::to_string(board.cursor.x + 1) + "," +
+                           std::to_string(board.cursor.y + 1);
+    x = BOARD_END.x - font_size * position.size();
+    DrawText(position.c_str(), x - TEXT_X_PADDING,
+             y + BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
 }
 
 void render_board(Board board) {
