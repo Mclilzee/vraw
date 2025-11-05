@@ -19,6 +19,8 @@ static const Vector2 BOARD_START{CX - WIDTH / 2,
                                  CY - HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING};
 static const Vector2 BOARD_END{CX + WIDTH / 2,
                                CY + HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING};
+static const std::string HEX_MAP[] = {"0", "1", "2", "3", "4", "5", "6", "7",
+                                      "8", "9", "A", "B", "C", "D", "E", "F"};
 
 class Cursor {
   public:
@@ -50,6 +52,12 @@ class Board {
         this->visual_mask = visual_mask;
     }
 };
+
+std::string color_to_hex(Color color) {
+    return "#" + HEX_MAP[color.r / 16] + HEX_MAP[color.r % 16] +
+           HEX_MAP[color.g / 16] + HEX_MAP[color.g % 16] +
+           HEX_MAP[color.b / 16] + HEX_MAP[color.b % 16];
+}
 
 std::vector<int> get_numbers(int anchor, int size) {
     std::vector<int> array;
@@ -96,7 +104,7 @@ void render_board_number(Board board) {
     }
 }
 
-void render_board_status_bar(Cursor cursor) {
+void render_board_status_bar(Board board) {
     int y = BOARD_END.y + NUMBERS_BOTTOM_BAR_PADDING + BAR_HEIGHT;
     int x = BOARD_START.x - NUMBERS_LEFT_BAR_PADDING;
     int font_size = BAR_HEIGHT - TEXT_PADDING;
@@ -106,11 +114,18 @@ void render_board_status_bar(Cursor cursor) {
     DrawText(text.c_str(), x + TEXT_PADDING, y + BAR_HEIGHT / 2 - font_size / 2,
              font_size, WHITE);
 
-    std::string position =
-        std::to_string(cursor.x + 1) + "," + std::to_string(cursor.y + 1);
+    std::string position = std::to_string(board.cursor.x + 1) + "," +
+                           std::to_string(board.cursor.y + 1);
+
     x = BOARD_END.x - font_size * position.size();
     DrawText(position.c_str(), x - TEXT_PADDING,
              y + BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
+
+    std::string color =
+        color_to_hex(board.cells.at(board.cursor.x * board.cursor.y));
+    x = BOARD_END.x / 2;
+    DrawText(color.c_str(), x, y + BAR_HEIGHT / 2 - font_size / 2, font_size,
+             WHITE);
 }
 
 void render_board(Board board) {
@@ -141,7 +156,7 @@ void render_board(Board board) {
     }
 
     render_board_number(board);
-    render_board_status_bar(board.cursor);
+    render_board_status_bar(board);
 }
 
 int main() {
