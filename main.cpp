@@ -113,12 +113,16 @@ void render_board_number(Board *board) {
     }
 }
 
-void render_board_info_bar(Board *board) {
+void render_board_info_bar() {
     int y = BOARD_END.y + NUMBERS_BOTTOM_BAR_PADDING + INFO_BAR_HEIGHT +
             STATUS_BAR_HEIGHT;
 
     int font_size = STATUS_BAR_HEIGHT - TEXT_Y_PADDING;
     std::string text = MODE_TEXT[current_mode];
+    if (current_mode == COMMAND_MODE) {
+        text += command_text;
+        std::cout << text << std::endl;
+    }
     DrawText(text.c_str(), BOARD_START.x - TEXT_X_PADDING,
              y + INFO_BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
 }
@@ -170,23 +174,41 @@ static void render_board(Board *board) {
     }
 
     render_board_number(board);
-    render_board_info_bar(board);
     render_board_status_bar(board);
+    render_board_info_bar();
 }
 
 int main() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "V-Draw");
     EnableEventWaiting();
+    // TODO: Uncomment after finishing for mode switching
+    // SetExitKey(KEY_NULL);
     Board board{ROWS, COLUMNS};
+    int board_cell_width = WIDTH / ROWS;
+    int board_cell_height = HEIGHT / COLUMNS;
     while (!WindowShouldClose()) {
-        BeginDrawing();
+        if (current_mode != COMMAND_MODE) {
+            command_text = "";
+        }
+
+        switch (current_mode) {
+        case COMMAND_MODE: {
+            int key_pressed = GetKeyPressed();
+            if (key_pressed >= KEY_COMMA && key_pressed <= KEY_GRAVE) {
+                command_text += GetKeyName(key_pressed);
+            } else if (IsKeyPressed(KEY_SPACE)) {
+                command_text += " ";
+            } else if (IsKeyPressed(KEY_BACKSPACE)) {
+                command_text = command_text.substr(0, command_text.size() - 1);
+            }
+        } break;
+        }
+
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
             current_mode = NORMAL_MODE;
             Vector2 position = GetMousePosition();
-            int width = WIDTH / ROWS;
-            int height = HEIGHT / COLUMNS;
-            int x = (position.x - BOARD_START.x) / width;
-            int y = (position.y - BOARD_START.y) / height;
+            int x = (position.x - BOARD_START.x) / board_cell_width;
+            int y = (position.y - BOARD_START.y) / board_cell_height;
             if (x >= 0 && x < ROWS && y >= 0 && y < COLUMNS) {
                 board.cursor.x = x;
                 board.cursor.y = y;
@@ -194,9 +216,11 @@ int main() {
         }
 
         if (current_mode != COMMAND_MODE && IsKeyPressed(KEY_SEMICOLON) &&
-            (IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT))) {
+            (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
             current_mode = COMMAND_MODE;
         }
+
+        BeginDrawing();
         render_board(&board);
         EndDrawing();
     }
@@ -204,26 +228,3 @@ int main() {
     CloseWindow();
     return 0;
 }
-
-// const modeSwitchingKeys = ["Enter", "Escape"];
-//
-// document.addEventListener("keydown", (e) => {
-//     e.preventDefault();
-//
-//     if (!comandMode && e.key === ":") {
-//         comandMode = true;
-//         handleCommandInput(e);
-//     } else if (comandMode && modeSwitchingKeys.includes(e.key)) {
-//         handleCommandInput(e);
-//         comandMode = false;
-//         handleNormalInput(e);
-//     } else if (comandMode) {
-//         handleCommandInput(e);
-//     } else {
-//         handleNormalInput(e);
-//     }
-// });
-//
-// renderBoard(board);
-// renderStatusInfo(board.cursor.getCursorLineInfo(), "orange");
-// export { board }
