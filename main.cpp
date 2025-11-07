@@ -10,18 +10,27 @@ static const int ROWS = 40;
 static const int COLUMNS = 40;
 static const int WIDTH = 800;
 static const int HEIGHT = 800;
-static const int CX = SCREEN_WIDTH / 2;
-static const int CY = SCREEN_HEIGHT / 2;
 static const int NUMBERS_LEFT_BAR_PADDING = 20;
-static const int BAR_HEIGHT = 18;
 static const int TEXT_X_PADDING = 10;
 static const int TEXT_Y_PADDING = 5;
+static const int INFO_BAR_HEIGHT = 18;
+static const int STATUS_BAR_HEIGHT = 25;
 static const int NUMBERS_BOTTOM_BAR_PADDING = 10;
 static const int BOARD_TOP_PADDING = 40;
-static const Vector2 BOARD_START{CX - WIDTH / 2, BOARD_TOP_PADDING};
-static const Vector2 BOARD_END{CX + WIDTH / 2, HEIGHT + BOARD_TOP_PADDING};
+static const Vector2 BOARD_START{SCREEN_WIDTH / 2 - WIDTH / 2,
+                                 BOARD_TOP_PADDING};
+static const Vector2 BOARD_END{SCREEN_WIDTH / 2 + WIDTH / 2,
+                               HEIGHT + BOARD_TOP_PADDING};
 static const std::string HEX_MAP[] = {"0", "1", "2", "3", "4", "5", "6", "7",
                                       "8", "9", "A", "B", "C", "D", "E", "F"};
+
+static const std::string MODE_TEXT[] = {":", "-- VISUAL --", "-- NORMAL --",
+                                        "-- INSERT --"};
+
+enum EditorMode { COMMAND_MODE, VISUAL_MODE, NORMAL_MODE, INSERT_MODE };
+
+std::string command_text = "";
+EditorMode current_mode = VISUAL_MODE;
 
 class Cursor {
   public:
@@ -69,14 +78,14 @@ std::vector<int> get_numbers(int anchor, int size) {
     return array;
 }
 
-void render_board_number(Board board) {
-    int height = HEIGHT / board.rows;
-    int width = WIDTH / board.columns;
+void render_board_number(Board *board) {
+    int height = HEIGHT / board->rows;
+    int width = WIDTH / board->columns;
     int font_size = height / 2;
     int font_padding = font_size / 2;
 
-    std::vector<int> v_numbers = get_numbers(board.cursor.y, board.columns);
-    std::vector<int> h_numbers = get_numbers(board.cursor.x, board.rows);
+    std::vector<int> v_numbers = get_numbers(board->cursor.y, board->columns);
+    std::vector<int> h_numbers = get_numbers(board->cursor.x, board->rows);
     for (size_t i = 0; i < v_numbers.size(); i++) {
         int y = BOARD_START.y + i * height + font_padding;
 
@@ -104,45 +113,56 @@ void render_board_number(Board board) {
     }
 }
 
-void render_board_status_bar(Board board) {
-    int y = BOARD_END.y + NUMBERS_BOTTOM_BAR_PADDING + BAR_HEIGHT;
-    int x = BOARD_START.x - NUMBERS_LEFT_BAR_PADDING;
-    int font_size = BAR_HEIGHT - TEXT_Y_PADDING;
-    DrawRectangle(x, y, WIDTH + NUMBERS_LEFT_BAR_PADDING * 2, BAR_HEIGHT, GRAY);
+void render_board_info_bar(Board *board) {
+    int y = BOARD_END.y + NUMBERS_BOTTOM_BAR_PADDING + INFO_BAR_HEIGHT +
+            STATUS_BAR_HEIGHT;
 
-    std::string color =
-        color_to_hex(board.cells.at(board.cursor.x * board.cursor.y));
-    DrawText(color.c_str(), x + TEXT_X_PADDING,
-             y + BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
-
-    std::string position = std::to_string(board.cursor.x + 1) + "," +
-                           std::to_string(board.cursor.y + 1);
-    x = BOARD_END.x - font_size * position.size();
-    DrawText(position.c_str(), x - TEXT_X_PADDING,
-             y + BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
+    int font_size = STATUS_BAR_HEIGHT - TEXT_Y_PADDING;
+    std::string text = MODE_TEXT[current_mode];
+    DrawText(text.c_str(), BOARD_START.x - TEXT_X_PADDING,
+             y + INFO_BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
 }
 
-static void render_board(Board board) {
+void render_board_status_bar(Board *board) {
+    int y = BOARD_END.y + NUMBERS_BOTTOM_BAR_PADDING + INFO_BAR_HEIGHT;
+    int x = BOARD_START.x - NUMBERS_LEFT_BAR_PADDING;
+    int font_size = INFO_BAR_HEIGHT - TEXT_Y_PADDING;
+    DrawRectangle(x, y, WIDTH + NUMBERS_LEFT_BAR_PADDING * 2, INFO_BAR_HEIGHT,
+                  GRAY);
+
+    std::string color =
+        color_to_hex(board->cells.at(board->cursor.x * board->cursor.y));
+    DrawText(color.c_str(), x + TEXT_X_PADDING,
+             y + INFO_BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
+
+    std::string position = std::to_string(board->cursor.x + 1) + "," +
+                           std::to_string(board->cursor.y + 1);
+    x = BOARD_END.x - font_size * position.size();
+    DrawText(position.c_str(), x - TEXT_X_PADDING,
+             y + INFO_BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
+}
+
+static void render_board(Board *board) {
     ClearBackground(DARKGRAY);
-    int width = WIDTH / board.columns;
-    int height = HEIGHT / board.rows;
-    for (int i = 0; i < board.rows; i++) {
-        for (int j = 0; j < board.rows; j++) {
+    int width = WIDTH / board->columns;
+    int height = HEIGHT / board->rows;
+    for (int i = 0; i < board->rows; i++) {
+        for (int j = 0; j < board->rows; j++) {
             int x = BOARD_START.x + j * width;
             int y = BOARD_START.y + i * height;
             DrawRectangle(x, y, width, height,
-                          board.cells.at(board.rows * i + j));
+                          board->cells.at(board->rows * i + j));
             DrawRectangle(x, y, width, height,
-                          board.visual_mask.at(board.rows * i + j));
+                          board->visual_mask.at(board->rows * i + j));
         }
     }
 
-    int x = board.cursor.x * width + BOARD_START.x;
-    int y = board.cursor.y * height + BOARD_START.y;
-    DrawRectangle(x, y, width, height, board.cursor.color);
+    int x = board->cursor.x * width + BOARD_START.x;
+    int y = board->cursor.y * height + BOARD_START.y;
+    DrawRectangle(x, y, width, height, board->cursor.color);
 
     // Include one more for bottom line drawing
-    for (int i = 0; i <= board.rows; i++) {
+    for (int i = 0; i <= board->rows; i++) {
         int y = BOARD_START.y + i * height;
         DrawLine(BOARD_START.x, y, BOARD_END.x, y, BLACK);
         int x = BOARD_START.x + i * width;
@@ -150,6 +170,7 @@ static void render_board(Board board) {
     }
 
     render_board_number(board);
+    render_board_info_bar(board);
     render_board_status_bar(board);
 }
 
@@ -160,6 +181,7 @@ int main() {
     while (!WindowShouldClose()) {
         BeginDrawing();
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            current_mode = NORMAL_MODE;
             Vector2 position = GetMousePosition();
             int width = WIDTH / ROWS;
             int height = HEIGHT / COLUMNS;
@@ -170,10 +192,38 @@ int main() {
                 board.cursor.y = y;
             }
         }
-        render_board(board);
+
+        if (current_mode != COMMAND_MODE && IsKeyPressed(KEY_SEMICOLON) &&
+            (IsKeyPressed(KEY_LEFT_SHIFT) || IsKeyPressed(KEY_RIGHT_SHIFT))) {
+            current_mode = COMMAND_MODE;
+        }
+        render_board(&board);
         EndDrawing();
     }
 
     CloseWindow();
     return 0;
 }
+
+// const modeSwitchingKeys = ["Enter", "Escape"];
+//
+// document.addEventListener("keydown", (e) => {
+//     e.preventDefault();
+//
+//     if (!comandMode && e.key === ":") {
+//         comandMode = true;
+//         handleCommandInput(e);
+//     } else if (comandMode && modeSwitchingKeys.includes(e.key)) {
+//         handleCommandInput(e);
+//         comandMode = false;
+//         handleNormalInput(e);
+//     } else if (comandMode) {
+//         handleCommandInput(e);
+//     } else {
+//         handleNormalInput(e);
+//     }
+// });
+//
+// renderBoard(board);
+// renderStatusInfo(board.cursor.getCursorLineInfo(), "orange");
+// export { board }
