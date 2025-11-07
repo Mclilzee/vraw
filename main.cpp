@@ -17,10 +17,9 @@ static const int BAR_HEIGHT = 18;
 static const int TEXT_X_PADDING = 10;
 static const int TEXT_Y_PADDING = 5;
 static const int NUMBERS_BOTTOM_BAR_PADDING = 10;
-static const Vector2 BOARD_START{
-    CX - WIDTH / 2, CY - HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING - BAR_HEIGHT};
-static const Vector2 BOARD_END{
-    CX + WIDTH / 2, CY + HEIGHT / 2 - NUMBERS_BOTTOM_BAR_PADDING - BAR_HEIGHT};
+static const int BOARD_TOP_PADDING = 40;
+static const Vector2 BOARD_START{CX - WIDTH / 2, BOARD_TOP_PADDING};
+static const Vector2 BOARD_END{CX + WIDTH / 2, HEIGHT + BOARD_TOP_PADDING};
 static const std::string HEX_MAP[] = {"0", "1", "2", "3", "4", "5", "6", "7",
                                       "8", "9", "A", "B", "C", "D", "E", "F"};
 
