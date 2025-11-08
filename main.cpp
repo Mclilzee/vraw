@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <raylib.h>
@@ -58,9 +59,30 @@ class Board {
   public:
     int rows;
     int columns;
+    Color selected_color = RED;
     std::vector<Color> cells;
     std::vector<Color> visual_mask;
     Cursor cursor;
+
+    void move_cursor_right(int steps) {
+        int x = cursor.x + steps;
+        cursor.x = std::min(x, columns - 1);
+    }
+
+    void move_cursor_left(int steps) {
+        int x = cursor.x - steps;
+        cursor.x = std::max(x, 0);
+    }
+
+    void move_cursor_down(int steps) {
+        int y = cursor.y + steps;
+        cursor.y = std::min(y, columns - 1);
+    }
+
+    void move_cursor_up(int steps) {
+        int y = cursor.y - steps;
+        cursor.y = std::max(y, 0);
+    }
 
     Board(int rows, int columns) {
         this->rows = rows;
@@ -192,6 +214,31 @@ static void render_board(Board *board) {
     render_board_info_bar();
 }
 
+void handle_command_input() {
+    int key_pressed = GetKeyPressed();
+    if (key_pressed >= KEY_COMMA && key_pressed <= KEY_GRAVE) {
+        command_text += GetKeyName(key_pressed);
+    } else if (IsKeyPressed(KEY_SPACE)) {
+        command_text += " ";
+    } else if (IsKeyDown(KEY_BACKSPACE)) {
+        command_text = command_text.substr(0, command_text.size() - 1);
+    }
+}
+
+void handle_movement_input(Board *board) {
+    if (IsKeyDown(KEY_I)) {
+        current_mode = INSERT;
+    } else if (IsKeyDown(KEY_L)) {
+        board->move_cursor_right(1);
+    } else if (IsKeyDown(KEY_H)) {
+        board->move_cursor_left(1);
+    } else if (IsKeyDown(KEY_K)) {
+        board->move_cursor_up(1);
+    } else if (IsKeyDown(KEY_J)) {
+        board->move_cursor_down(1);
+    }
+}
+
 int main() {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "V-Draw");
     EnableEventWaiting();
@@ -207,14 +254,11 @@ int main() {
 
         switch (current_mode) {
         case COMMAND: {
-            int key_pressed = GetKeyPressed();
-            if (key_pressed >= KEY_COMMA && key_pressed <= KEY_GRAVE) {
-                command_text += GetKeyName(key_pressed);
-            } else if (IsKeyPressed(KEY_SPACE)) {
-                command_text += " ";
-            } else if (IsKeyDown(KEY_BACKSPACE)) {
-                command_text = command_text.substr(0, command_text.size() - 1);
-            }
+            handle_command_input();
+        } break;
+        case NORMAL:
+        case INSERT: {
+            handle_movement_input(&board);
         } break;
         }
 
