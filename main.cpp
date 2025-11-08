@@ -24,13 +24,28 @@ static const Vector2 BOARD_END{SCREEN_WIDTH / 2 + WIDTH / 2,
 static const std::string HEX_MAP[] = {"0", "1", "2", "3", "4", "5", "6", "7",
                                       "8", "9", "A", "B", "C", "D", "E", "F"};
 
-static const std::string MODE_TEXT[] = {":", "-- VISUAL --", "-- NORMAL --",
-                                        "-- INSERT --"};
+static const std::string MODE_TEXT[] = {":",
+                                        "-- VISUAL --",
+                                        "-- VISUAL LINE --",
+                                        "-- VISUAL BLOCK --",
+                                        "-- NORMAL --",
+                                        "-- INSERT --",
+                                        "-- DELETE --"};
 
-enum EditorMode { COMMAND_MODE, VISUAL_MODE, NORMAL_MODE, INSERT_MODE };
+// STATE
+enum EditorMode {
+    COMMAND,
+    VISUAL,
+    VISUAL_LINE,
+    VISUAL_BLOCK,
+    NORMAL,
+    INSERT,
+    DELETE
+};
 
 std::string command_text = "";
-EditorMode current_mode = VISUAL_MODE;
+EditorMode current_mode = NORMAL;
+int visual_start_index = 0;
 
 class Cursor {
   public:
@@ -119,12 +134,11 @@ void render_board_info_bar() {
 
     int font_size = STATUS_BAR_HEIGHT - TEXT_Y_PADDING;
     std::string text = MODE_TEXT[current_mode];
-    if (current_mode == COMMAND_MODE) {
+    if (current_mode == COMMAND) {
         text += command_text;
-        std::cout << text << std::endl;
     }
     DrawText(text.c_str(), BOARD_START.x - TEXT_X_PADDING,
-             y + INFO_BAR_HEIGHT / 2 - font_size / 2, font_size, WHITE);
+             y + INFO_BAR_HEIGHT / 2 - font_size / 2, font_size, ORANGE);
 }
 
 void render_board_status_bar(Board *board) {
@@ -187,25 +201,25 @@ int main() {
     int board_cell_width = WIDTH / ROWS;
     int board_cell_height = HEIGHT / COLUMNS;
     while (!WindowShouldClose()) {
-        if (current_mode != COMMAND_MODE) {
+        if (current_mode != COMMAND) {
             command_text = "";
         }
 
         switch (current_mode) {
-        case COMMAND_MODE: {
+        case COMMAND: {
             int key_pressed = GetKeyPressed();
             if (key_pressed >= KEY_COMMA && key_pressed <= KEY_GRAVE) {
                 command_text += GetKeyName(key_pressed);
             } else if (IsKeyPressed(KEY_SPACE)) {
                 command_text += " ";
-            } else if (IsKeyPressed(KEY_BACKSPACE)) {
+            } else if (IsKeyDown(KEY_BACKSPACE)) {
                 command_text = command_text.substr(0, command_text.size() - 1);
             }
         } break;
         }
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-            current_mode = NORMAL_MODE;
+            current_mode = NORMAL;
             Vector2 position = GetMousePosition();
             int x = (position.x - BOARD_START.x) / board_cell_width;
             int y = (position.y - BOARD_START.y) / board_cell_height;
@@ -215,9 +229,9 @@ int main() {
             }
         }
 
-        if (current_mode != COMMAND_MODE && IsKeyPressed(KEY_SEMICOLON) &&
+        if (current_mode != COMMAND && IsKeyPressed(KEY_SEMICOLON) &&
             (IsKeyDown(KEY_LEFT_SHIFT) || IsKeyDown(KEY_RIGHT_SHIFT))) {
-            current_mode = COMMAND_MODE;
+            current_mode = COMMAND;
         }
 
         BeginDrawing();
